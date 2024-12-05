@@ -6,6 +6,8 @@
 
 **网址**: [Irrlicht 官方网站](https://github.com/freeminer/irrlicht)
 
+**库文件下载**:https://irrlicht.sourceforge.io/?page_id=10
+
 ## 使用方法
 
 Discovered an out of the box C++3D library,
