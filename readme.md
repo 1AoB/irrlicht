@@ -1,5 +1,40 @@
+# Irrlicht
+
+**特点**: 一个轻量级的3D引擎，易于使用，支持多种渲染后端。
+
+**适合场景**: 小型3D项目，快速原型开发。
+
+**网址**: [Irrlicht 官方网站](https://github.com/freeminer/irrlicht)
+
+## 使用方法
+
+Discovered an out of the box C++3D library,
+
+You only need to set your project properties:
+
+1. Configure Properties ->VC++Directory ->Include Directory: Place in the include directory
+
+2. Configure Properties ->VC++Directory ->Library Directory: Place in lib directory
+2. Configure Properties ->Linker ->General ->Additional Library Directory: Place in lib directory
+2. Configure Properties ->Linker ->Additional Dependencies: Fill in "Irrlicht. lib"
+2. Configure Properties ->Debug ->Environment: Place in "PATH=$(PATH); C: \ xxx" (which is your DLL directory)
+
+## 使用案例
+
+
+
+----
+
+
+
+# 官方文档
+
 ==========================================================================
-The Irrlicht Engine SDK version 1.9
+
+## The Irrlicht Engine SDK version 1.9
+
+
+
 ==========================================================================
 
   Welcome the Irrlicht Engine SDK.
@@ -77,7 +112,7 @@ The Irrlicht Engine SDK version 1.9
   * gcc 4.x
   * Visual Studio 2008(9.0)-2012(11.0)
   * Code::Blocks (& gcc or visual studio toolkit)
-  
+
   If you ever want to (re)compile the engine yourself (which means you don't
   want to use the precompiled version) you need the following:
 
@@ -125,8 +160,10 @@ The Irrlicht Engine SDK version 1.9
   See the README files in the jpeglib and the zlib for
   further informations.
 
+  ## The Irrlicht Engine License
 
-  The Irrlicht Engine License
+
+
   ===========================
 
   Copyright (C) 2002-2012 Nikolaus Gebhardt
@@ -186,9 +223,9 @@ The Irrlicht Engine SDK version 1.9
   Many others (this list hasn't been updated in a while, but they are often mentioned in changes.txt)
   Etienne Petitjean wrote the MacPort of the engine
   Mark Jeacocke	Wrote lots of helpful comments and ideas in the forums and per email.
-  Julio Gorg�	Created the 'Unofficial DirectX 9.0 Driver for the Irrlicht Engine'
+  Julio Gorgé	Created the 'Unofficial DirectX 9.0 Driver for the Irrlicht Engine'
   Andy Spurgeon	Wrote the Dev-Cpp tutorial.
-  Andr� Simon	Wrote the Codewarrior tutorial.
+  André Simon	Wrote the Codewarrior tutorial.
   KnightToFlight	Created the unoffical terrain renderer addon for the Irrlicht Engine.
   Jon Pry	Wrote the code to load compressed TGA files.
   Matthew Couch	Wrote the tokamak integration tutorial.
@@ -232,4 +269,4 @@ The Irrlicht Engine SDK version 1.9
   Guy Eric Schalnat, Andreas Dilger, Glenn Randers-Pehrson and others	Created libpng
   The Independent JPEG Group	Created JPEG lib
   Dr Brian Gladman AES Created aesGladman
-  
+
