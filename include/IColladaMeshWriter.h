@@ -92,7 +92,7 @@ namespace scene
 	class IColladaMeshWriterProperties  : public virtual IReferenceCounted
 	{
 	public:
-		virtual ~IColladaMeshWriterProperties () {}
+		virtual ~IColladaMeshWriterProperties ()	{}
 
 		//! Which lighting model should be used in the technique (FX) section when exporting effects (materials)
 		virtual E_COLLADA_TECHNIQUE_FX getTechniqueFx(const video::SMaterial& material) const = 0;
@@ -129,7 +129,7 @@ namespace scene
 		virtual f32 getReflectivity(const video::SMaterial& material) const = 0;
 
 		//! Return index of refraction for that material
-		/** By default we don't write that.
+		/**	By default we don't write that.
 		\return a value greater equal 0.f to write \<index_of_refraction\> when it is lesser than 0 nothing will be written */
 		virtual f32 getIndexOfRefraction(const video::SMaterial& material) const = 0;
 
@@ -139,7 +139,7 @@ namespace scene
 
 		//! Return the mesh for the given node. If it has no mesh or shouldn't export it's mesh
 		//! you can return 0 in which case only the transformation matrix of the node will be used.
-		// TODO: Function is not const because there is no const getMesh() function for several Irrlicht nodes.
+		// Note: Function is not const because there is no const getMesh() function.
 		virtual IMesh* getMesh(irr::scene::ISceneNode * node) = 0;
 
 		//! Return if the node has it's own material overwriting the mesh-materials
@@ -191,7 +191,7 @@ namespace scene
 		the number of exported materials using that knowledge by using identical
 		names for such shared materials.
 		Names must follow the xs::NCName standard to be valid, you can run them
-		through IColladaMeshWriter::toNCName to ensure that.
+		through	IColladaMeshWriter::toNCName to ensure that.
 		*/
 		virtual irr::core::stringw nameForMaterial(const video::SMaterial & material, int materialId, const scene::IMesh* mesh, const scene::ISceneNode* node) = 0;
 	};
@@ -288,7 +288,7 @@ namespace scene
 
 		//! Make certain there is only one collada material generated per Irrlicht material
 		/** Checks before creating a collada material-name if an identical
-		irr:::video::SMaterial has been exported already. If so don't export it with
+		video::SMaterial has been exported already. If so don't export it with
 		another name. This is set by default and leads to way smaller .dae files.
 		Note that if you need to disable this flag for some reason you can still
 		get a similar effect using the IColladaMeshWriterNames::nameForMaterial
@@ -359,12 +359,6 @@ namespace scene
 		//! Restrict the characters of oldString a set of allowed characters in xs::NCName and add the prefix.
 		/** A tool function to help when using a custom name generator to generative valid names for collada names and id's. */
 		virtual irr::core::stringw toNCName(const irr::core::stringw& oldString, const irr::core::stringw& prefix=irr::core::stringw(L"_NC_")) const = 0;
-
-		//! After export you can find out which name had been used for writing the geometry for this node.
-		/** The name comes from IColladaMeshWriterNames::nameForMesh, but you can't access the node there.
-		\return Either a pointer to the name or NULL */
-		// TODO: Function is not const because there is no const getMesh() function for several Irrlicht nodes.
-		virtual const irr::core::stringw* findGeometryNameForNode(ISceneNode* node) = 0;
 
 
 	protected:

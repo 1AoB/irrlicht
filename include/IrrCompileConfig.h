@@ -7,12 +7,12 @@
 
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
-#define IRRLICHT_VERSION_MINOR 9
-#define IRRLICHT_VERSION_REVISION 0
+#define IRRLICHT_VERSION_MINOR 8
+#define IRRLICHT_VERSION_REVISION 5
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-#define IRRLICHT_VERSION_SVN alpha
-#define IRRLICHT_SDK_VERSION "1.9.0"
+//#define IRRLICHT_VERSION_SVN -alpha
+#define IRRLICHT_SDK_VERSION "1.8.5"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -24,8 +24,6 @@
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
-//! _IRR_IPHONE_PLATFORM_ for Apple devices running iOS
-//! _IRR_ANDROID_PLATFORM_ for devices running Android
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! Note: PLATFORM defines the OS specific layer, API can group several platforms
 
@@ -44,6 +42,7 @@
 //! So defines can be controlled from Makefiles or Projectfiles which allows building
 //! different library versions without having to change the sources.
 //! Example: NO_IRR_COMPILE_WITH_X11_ would disable X11
+
 
 //! Uncomment this line to compile with the SDL device
 //#define _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -94,33 +93,11 @@
 #if !defined(MACOSX)
 #define MACOSX // legacy support
 #endif
-#define _IRR_OSX_PLATFORM_ // we only support OSX on these systems
-
-#if defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) || defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-#define _IRR_IPHONE_PLATFORM_
-#define _IRR_COMPILE_WITH_IPHONE_DEVICE_
-#define _IRR_COMPILE_WITH_OGLES1_
-#define _IRR_COMPILE_WITH_OGLES2_
-#else
+#define _IRR_OSX_PLATFORM_
 #define _IRR_COMPILE_WITH_OSX_DEVICE_
 #endif
-#endif
 
-#if defined(_IRR_ANDROID_PLATFORM_)
-#define _IRR_COMPILE_WITH_ANDROID_DEVICE_
-#define _IRR_COMPILE_WITH_OGLES1_
-#define _IRR_COMPILE_WITH_OGLES2_
-#define _IRR_COMPILE_ANDROID_ASSET_READER_
-#endif
-
-#if defined(__SVR4) && defined(__sun)
-#define _IRR_SOLARIS_PLATFORM_
-#if defined(__sparc)
-	#define __BIG_ENDIAN__
-#endif
-#endif
-
-#if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
+#if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_)
 #ifndef _IRR_SOLARIS_PLATFORM_
 #define _IRR_LINUX_PLATFORM_
 #endif
@@ -138,19 +115,6 @@
 
 //! Maximum number of texture an SMaterial can have, up to 8 are supported by Irrlicht.
 #define _IRR_MATERIAL_MAX_TEXTURES_ 4
-
-//! Whether to support XML and XML-based formats (irrmesh, collada...)
-#define _IRR_COMPILE_WITH_XML_
-#ifdef NO_IRR_COMPILE_WITH_XML_
-#undef _IRR_COMPILE_WITH_XML_
-#endif
-
-//! Add a leak-hunter to Irrlicht which helps finding unreleased reference counted objects.
-//! NOTE: This is slow and should only be used for debugging
-//#define _IRR_COMPILE_WITH_LEAK_HUNTER_
-#ifdef NO_IRR_COMPILE_WITH_LEAK_HUNTER_
-#undef _IRR_COMPILE_WITH_LEAK_HUNTER_
-#endif
 
 //! Define _IRR_COMPILE_WITH_DIRECT3D_8_ and _IRR_COMPILE_WITH_DIRECT3D_9_ to
 //! compile the Irrlicht engine with Direct3D8 and/or DIRECT3D9.
@@ -197,56 +161,9 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 //! Define _IRR_COMPILE_WITH_OPENGL_ to compile the Irrlicht engine with OpenGL.
 /** If you do not wish the engine to be compiled with OpenGL, comment this
 define out. */
-#if !defined(_IRR_IPHONE_PLATFORM_) && !defined(_IRR_ANDROID_PLATFORM_)
 #define _IRR_COMPILE_WITH_OPENGL_
-#endif
 #ifdef NO_IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_OPENGL_
-#endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_WGL_MANAGER_)
-#define _IRR_COMPILE_WITH_WGL_MANAGER_
-#endif
-#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_COMPILE_WITH_X11_DEVICE_) && !defined(NO_IRR_COMPILE_WITH_GLX_MANAGER_)
-#define _IRR_COMPILE_WITH_GLX_MANAGER_
-#endif
-
-//! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
-/** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment
- this define out.
- You should only use this define if you really need the OpenGL-ES driver, and
- it should be usually the only HW accelerated one. OpenGL is currently disabled
- if using this driver, to avoid problems with the ogl-es emulators.
- */
-#define _IRR_COMPILE_WITH_OGLES1_
-#ifdef NO_IRR_COMPILE_WITH_OGLES1_
-#undef _IRR_COMPILE_WITH_OGLES1_
-#endif
-#if defined(_IRR_COMPILE_WITH_OGLES1_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
-#define _IRR_COMPILE_WITH_EGL_MANAGER_
-#endif
-
-//! Define _IRR_COMPILE_WITH_OGLES2_ to compile the Irrlicht engine with OpenGL-ES 2.x.
-/** If you do not wish the engine to be compiled with OpenGL-ES 2.x, comment
- this define out.
- You should only use this define if you really need the OpenGL-ES driver, and
- it should be usually the only HW accelerated one. OpenGL is currently disabled
- if using this driver, to avoid problems with the ogl-es emulators.
- */
-#define _IRR_COMPILE_WITH_OGLES2_
-#ifdef NO_IRR_COMPILE_WITH_OGLES2_
-#undef _IRR_COMPILE_WITH_OGLES2_
-#endif
-#ifndef IRR_OGLES2_SHADER_PATH
-#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
-#define IRR_OGLES2_SHADER_PATH ""
-#elif defined(_IRR_ANDROID_PLATFORM_)
-#define IRR_OGLES2_SHADER_PATH "media/Shaders/"
-#else
-#define IRR_OGLES2_SHADER_PATH "../../media/Shaders/"
-#endif
-#endif
-#if defined(_IRR_COMPILE_WITH_OGLES2_) && !defined(NO_IRR_COMPILE_WITH_EGL_MANAGER_)
-#define _IRR_COMPILE_WITH_EGL_MANAGER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
@@ -276,31 +193,8 @@ define out. */
 //! Define _IRR_OPENGL_USE_EXTPOINTER_ if the OpenGL renderer should use OpenGL extensions via function pointers.
 /** On some systems there is no support for the dynamic extension of OpenGL
 	via function pointers such that this has to be undef'ed. */
-#ifdef _IRR_COMPILE_WITH_OPENGL_
 #if !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_SOLARIS_PLATFORM_)
 #define _IRR_OPENGL_USE_EXTPOINTER_
-#endif
-#endif
-
-//! Define _IRR_OGLES1_USE_EXTPOINTER_ if the OpenGL-ES 1.x driver should use extensions via function pointers.
-/** This should usually be enabled, but also depends on the specific
- architecture. You can simply uncomment the define and recompile.
- The iPhone does not have extension pointers, so disable it there always.
- */
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-#if !defined(_IRR_IPHONE_PLATFORM_)
-#define _IRR_OGLES1_USE_EXTPOINTER_
-#endif
-#endif
-
-//! Define _IRR_OGLES2_USE_EXTPOINTER_ if the OpenGL-ES 2.x driver should use extensions via function pointers.
-/** This should usually be enabled, but also depends on the specific
- architecture. You can simply uncomment the define and recompile.
- */
-#ifdef _IRR_COMPILE_WITH_OGLES2_
-#if !defined(_IRR_IPHONE_PLATFORM_)
-#define _IRR_OGLES2_USE_EXTPOINTER_
-#endif
 #endif
 
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
@@ -344,7 +238,7 @@ for Windows based systems. You also have to set #define UNICODE for this to comp
 #undef _IRR_WCHAR_FILESYSTEM
 #endif
 
-//! Define _IRR_COMPILE_WITH_JPEGLIB_ to enable compiling the engine using libjpeg.
+//! Define _IRR_COMPILE_WITH_LIBJPEG_ to enable compiling the engine using libjpeg.
 /** This enables the engine to read jpeg images. If you comment this out,
 the engine will no longer read .jpeg images. */
 #define _IRR_COMPILE_WITH_LIBJPEG_
@@ -477,7 +371,7 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_OGRE_LOADER_
 #undef _IRR_COMPILE_WITH_OGRE_LOADER_
 #endif
-#endif // _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+#endif	// _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
 
 //! Define _IRR_COMPILE_WITH_IRR_MESH_LOADER_ if you want to load Irrlicht Engine .irrmesh files
 #define _IRR_COMPILE_WITH_IRR_MESH_LOADER_
@@ -622,30 +516,15 @@ B3D, MS3D or X meshes */
 #ifdef NO_IRR_COMPILE_WITH_PSD_LOADER_
 #undef _IRR_COMPILE_WITH_PSD_LOADER_
 #endif
-//! Define _IRR_COMPILE_WITH_DDS_LOADER_ if you want to load compressed .dds files
-// Patent problem isn't related to this loader.
-#define _IRR_COMPILE_WITH_DDS_LOADER_
-#ifdef NO_IRR_COMPILE_WITH_DDS_LOADER_
-#undef _IRR_COMPILE_WITH_DDS_LOADER_
-#endif
-//! Define _IRR_COMPILE_WITH_DDS_DECODER_LOADER_ if you want to load .dds files
-//! loader will decompress these files and will send to the memory as uncompressed files.
+//! Define _IRR_COMPILE_WITH_DDS_LOADER_ if you want to load .dds files
 // Outcommented because
 // a) it doesn't compile on 64-bit currently
 // b) anyone enabling it should be aware that S3TC compression algorithm which might be used in that loader
 // is patented in the US by S3 and they do collect license fees when it's used in applications.
 // So if you are unfortunate enough to develop applications for US market and their broken patent system be careful.
-// #define _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-#ifdef NO_IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-#undef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-#endif
-#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
+// #define _IRR_COMPILE_WITH_DDS_LOADER_
+#ifdef NO_IRR_COMPILE_WITH_DDS_LOADER_
 #undef _IRR_COMPILE_WITH_DDS_LOADER_
-#endif
-//! Define _IRR_COMPILE_WITH_PVR_LOADER_ if you want to load .pvr files
-#define _IRR_COMPILE_WITH_PVR_LOADER_
-#ifdef NO_IRR_COMPILE_WITH_PVR_LOADER_
-#undef _IRR_COMPILE_WITH_PVR_LOADER_
 #endif
 //! Define _IRR_COMPILE_WITH_TGA_LOADER_ if you want to load .tga files
 #define _IRR_COMPILE_WITH_TGA_LOADER_
@@ -903,6 +782,10 @@ precision will be lower but speed higher. currently X86 only
 	#undef _IRR_WCHAR_FILESYSTEM
 #endif
 
+#if defined(__sparc__) || defined(__sun__)
+#define __BIG_ENDIAN__
+#endif
+
 #if defined(_IRR_SOLARIS_PLATFORM_)
 	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #endif
@@ -911,14 +794,6 @@ precision will be lower but speed higher. currently X86 only
 #define __IRR_HAS_S64
 #ifdef NO__IRR_HAS_S64
 #undef __IRR_HAS_S64
-#endif
-
-// These depend on XML
-#ifndef _IRR_COMPILE_WITH_XML_
-	#undef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
-	#undef _IRR_COMPILE_WITH_IRR_WRITER_
-	#undef _IRR_COMPILE_WITH_COLLADA_WRITER_
-	#undef _IRR_COMPILE_WITH_COLLADA_LOADER_
 #endif
 
 #if defined(__BORLANDC__)
@@ -936,6 +811,7 @@ precision will be lower but speed higher. currently X86 only
 		#define _tfindnext   __tfindnext
 		typedef long intptr_t;
 	#endif
+
 #endif
 
 #ifdef _DEBUG

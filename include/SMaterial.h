@@ -22,15 +22,15 @@ namespace video
 	//! Flag for EMT_ONETEXTURE_BLEND, ( BlendFactor ) BlendFunc = source * sourceFactor + dest * destFactor
 	enum E_BLEND_FACTOR
 	{
-		EBF_ZERO	= 0,		//!< src & dest	(0, 0, 0, 0)
-		EBF_ONE,			//!< src & dest	(1, 1, 1, 1)
-		EBF_DST_COLOR,			//!< src	(destR, destG, destB, destA)
+		EBF_ZERO	= 0,			//!< src & dest	(0, 0, 0, 0)
+		EBF_ONE,					//!< src & dest	(1, 1, 1, 1)
+		EBF_DST_COLOR, 				//!< src	(destR, destG, destB, destA)
 		EBF_ONE_MINUS_DST_COLOR,	//!< src	(1-destR, 1-destG, 1-destB, 1-destA)
-		EBF_SRC_COLOR,			//!< dest	(srcR, srcG, srcB, srcA)
-		EBF_ONE_MINUS_SRC_COLOR,	//!< dest	(1-srcR, 1-srcG, 1-srcB, 1-srcA)
-		EBF_SRC_ALPHA,			//!< src & dest	(srcA, srcA, srcA, srcA)
+		EBF_SRC_COLOR,				//!< dest	(srcR, srcG, srcB, srcA)
+		EBF_ONE_MINUS_SRC_COLOR, 	//!< dest	(1-srcR, 1-srcG, 1-srcB, 1-srcA)
+		EBF_SRC_ALPHA,				//!< src & dest	(srcA, srcA, srcA, srcA)
 		EBF_ONE_MINUS_SRC_ALPHA,	//!< src & dest	(1-srcA, 1-srcA, 1-srcA, 1-srcA)
-		EBF_DST_ALPHA,			//!< src & dest	(destA, destA, destA, destA)
+		EBF_DST_ALPHA,				//!< src & dest	(destA, destA, destA, destA)
 		EBF_ONE_MINUS_DST_ALPHA,	//!< src & dest	(1-destA, 1-destA, 1-destA, 1-destA)
 		EBF_SRC_ALPHA_SATURATE		//!< src	(min(srcA, 1-destA), idem, ...)
 	};
@@ -39,11 +39,11 @@ namespace video
 	enum E_BLEND_OPERATION
 	{
 		EBO_NONE = 0,	//!< No blending happens
-		EBO_ADD,	//!< Default blending adds the color values
+		EBO_ADD,		//!< Default blending adds the color values
 		EBO_SUBTRACT,	//!< This mode subtracts the color values
 		EBO_REVSUBTRACT,//!< This modes subtracts destination from source
-		EBO_MIN,	//!< Choose minimum value of each color channel
-		EBO_MAX,	//!< Choose maximum value of each color channel
+		EBO_MIN,		//!< Choose minimum value of each color channel
+		EBO_MAX,		//!< Choose maximum value of each color channel
 		EBO_MIN_FACTOR,	//!< Choose minimum value of each color channel after applying blend factors, not widely supported
 		EBO_MAX_FACTOR,	//!< Choose maximum value of each color channel after applying blend factors, not widely supported
 		EBO_MIN_ALPHA,	//!< Choose minimum value of each color channel based on alpha value, not widely supported
@@ -61,8 +61,8 @@ namespace video
 	//! Comparison function, e.g. for depth buffer test
 	enum E_COMPARISON_FUNC
 	{
-		//! Depth test disabled (disable also write to depth buffer)
-		ECFN_DISABLED=0,
+		//! Test never succeeds, this equals disable
+		ECFN_NEVER=0,
 		//! <= test, default for e.g. depth test
 		ECFN_LESSEQUAL=1,
 		//! Exact equality
@@ -76,9 +76,7 @@ namespace video
 		//! inverse of <=
 		ECFN_GREATER,
 		//! test succeeds always
-		ECFN_ALWAYS,
-		//! Test never succeeds
-		ECFN_NEVER
+		ECFN_ALWAYS
 	};
 
 	//! Enum values for enabling/disabling color planes for rendering
@@ -128,7 +126,7 @@ namespace video
 	{
 		const u32 state = IR(param);
 		alphaSource = (state & 0x0000F000) >> 12;
-		modulo = E_MODULATE_FUNC( ( state & 0x00000F00 ) >> 8 );
+		modulo	= E_MODULATE_FUNC( ( state & 0x00000F00 ) >> 8 );
 		srcFact = E_BLEND_FACTOR ( ( state & 0x000000F0 ) >> 4 );
 		dstFact = E_BLEND_FACTOR ( ( state & 0x0000000F ) );
 	}
@@ -364,13 +362,11 @@ namespace video
 		f32 Thickness;
 
 		//! Is the ZBuffer enabled? Default: ECFN_LESSEQUAL
-		/** If you want to disable depth test for this material
-		just set this parameter to ECFN_DISABLED.
-		Values are from E_COMPARISON_FUNC. */
+		/** Values are from E_COMPARISON_FUNC. */
 		u8 ZBuffer;
 
 		//! Sets the antialiasing mode
-		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is
+		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is 
 		EAAM_SIMPLE|EAAM_LINE_SMOOTH, i.e. simple multi-sample
 		anti-aliasing and lime smoothing is enabled. */
 		u8 AntiAliasing;
@@ -384,7 +380,7 @@ namespace video
 
 		//! Defines the interpretation of vertex color in the lighting equation
 		/** Values should be chosen from E_COLOR_MATERIAL.
-		When lighting is enabled, vertex color can be used instead of the
+		When lighting is enabled, vertex color can be used instead of the 
 		material values for light modulation. This allows to easily change e.g. the
 		diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
 		a very similar rendering as with lighting turned off, just with light shading. */
@@ -422,8 +418,7 @@ namespace video
 		//! Is the zbuffer writeable or is it read-only. Default: true.
 		/** This flag is forced to false if the MaterialType is a
 		transparent type and the scene parameter
-		ALLOW_ZWRITE_ON_TRANSPARENT is not set. If you set this parameter
-		to true, make sure that ZBuffer value is other than ECFN_DISABLED */
+		ALLOW_ZWRITE_ON_TRANSPARENT is not set. */
 		bool ZWriteEnable:1;
 
 		//! Is backface culling enabled? Default: true
@@ -584,7 +579,7 @@ namespace video
 				case EMF_LIGHTING:
 					return Lighting;
 				case EMF_ZBUFFER:
-					return ZBuffer!=ECFN_DISABLED;
+					return ZBuffer!=ECFN_NEVER;
 				case EMF_ZWRITE_ENABLE:
 					return ZWriteEnable;
 				case EMF_BACK_FACE_CULLING:

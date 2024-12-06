@@ -25,7 +25,8 @@ class array
 public:
 
 	//! Default constructor for empty array.
-	array() : data(0), allocated(0), used(0),
+	array()
+		: data(0), allocated(0), used(0),
 			strategy(ALLOC_STRATEGY_DOUBLE), free_when_destroyed(true), is_sorted(true)
 	{
 	}
@@ -33,9 +34,9 @@ public:
 
 	//! Constructs an array and allocates an initial chunk of memory.
 	/** \param start_count Amount of elements to pre-allocate. */
-	array(u32 start_count) : data(0), allocated(0), used(0),
-			strategy(ALLOC_STRATEGY_DOUBLE),
-			free_when_destroyed(true), is_sorted(true)
+	array(u32 start_count)
+      : data(0), allocated(0), used(0),
+        strategy(ALLOC_STRATEGY_DOUBLE), free_when_destroyed(true), is_sorted(true)
 	{
 		reallocate(start_count);
 	}
@@ -467,8 +468,8 @@ public:
 	//! it is used for searching a multiset
 	/** The array will be sorted before the binary search if it is not
 	already sorted.
-	\param element Element to search for.
-	\param &last return lastIndex of equal elements
+	\param element	Element to search for.
+	\param &last	return lastIndex of equal elements
 	\return Position of the first searched element if it was found,
 	otherwise -1 is returned. */
 	s32 binary_search_multi(const T& element, s32 &last)
@@ -566,12 +567,12 @@ public:
 
 		for (i=index+count; i<used; ++i)
 		{
-			if (i-count >= index+count) // not already destructed before loop
+			if (i-count >= index+count)	// not already destructed before loop
 				allocator.destruct(&data[i-count]);
 
 			allocator.construct(&data[i-count], data[i]); // data[i-count] = data[i];
 
-			if (i >= used-count) // those which are not overwritten
+			if (i >= used-count)	// those which are not overwritten
 				allocator.destruct(&data[i]);
 		}
 
@@ -589,14 +590,14 @@ public:
 	//! Swap the content of this array container with the content of another array
 	/** Afterwards this object will contain the content of the other object and the other
 	object will contain the content of this object.
-	\param other Swap content with this object */
+	\param other Swap content with this object	*/
 	void swap(array<T, TAlloc>& other)
 	{
 		core::swap(data, other.data);
 		core::swap(allocated, other.allocated);
 		core::swap(used, other.used);
-		core::swap(allocator, other.allocator); // memory is still released by the same allocator used for allocation
-		eAllocStrategy helper_strategy(strategy); // can't use core::swap with bitfields
+		core::swap(allocator, other.allocator);	// memory is still released by the same allocator used for allocation
+		eAllocStrategy helper_strategy(strategy);	// can't use core::swap with bitfields
 		strategy = other.strategy;
 		other.strategy = helper_strategy;
 		bool helper_free_when_destroyed(free_when_destroyed);

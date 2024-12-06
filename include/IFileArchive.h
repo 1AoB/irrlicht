@@ -45,9 +45,6 @@ enum E_FILE_ARCHIVE_TYPE
 	//! A wad Archive, Quake2, Halflife
 	EFAT_WAD     = MAKE_IRR_ID('W','A','D', 0),
 
-    //! An Android asset file archive
-    EFAT_ANDROID_ASSET = MAKE_IRR_ID('A','S','S','E'),
-
 	//! The type of this archive is unknown
 	EFAT_UNKNOWN = MAKE_IRR_ID('u','n','k','n')
 };
@@ -77,9 +74,6 @@ public:
 
 	//! get the archive type
 	virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_UNKNOWN; }
-
-	//! return the name (id) of the file Archive
-	virtual const io::path& getArchiveName() const =0;
 
 	//! An optionally used password string
 	/** This variable is publicly accessible from the interface in order to

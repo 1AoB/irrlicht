@@ -34,10 +34,6 @@ namespace irr
 		class ISceneManager;
 	} // end namespace scene
 
-	namespace video {
-		class IContextManager;
-	} // end namespace video
-
 	//! The Irrlicht device. You can create it with createDevice() or createDeviceEx().
 	/** This is the most important class of the Irrlicht Engine. You can
 	access everything in the engine if you have a pointer to an instance of
@@ -174,7 +170,7 @@ namespace irr
 		\return True if window is active. */
 		virtual bool isWindowActive() const = 0;
 
-		//! Checks if the Irrlicht window has focus
+		//! Checks if the Irrlicht window has the input focus
 		/** \return True if window has focus. */
 		virtual bool isWindowFocused() const = 0;
 
@@ -240,9 +236,6 @@ namespace irr
 		//! Restore the window to normal size if possible.
 		virtual void restoreWindow() =0;
 
-		//! Get the position of the frame on-screen
-		virtual core::position2di getWindowPosition() = 0;
-
 		//! Activate any joysticks, and generate events for them.
 		/** Irrlicht contains support for joysticks, but does not generate joystick events by default,
 		as this would consume joystick info that 3rd party libraries might rely on. Call this method to
@@ -252,42 +245,6 @@ namespace irr
 				is defined, false if joysticks are not supported or support is compiled out.
 		*/
 		virtual bool activateJoysticks(core::array<SJoystickInfo>& joystickInfo) =0;
-        
-        //! Activate accelerometer.
-        virtual bool activateAccelerometer(float updateInterval = 0.016666f) = 0;
-        
-        //! Deactivate accelerometer.
-        virtual bool deactivateAccelerometer() = 0;
-        
-        //! Is accelerometer active.
-        virtual bool isAccelerometerActive() = 0;
-        
-        //! Is accelerometer available.
-        virtual bool isAccelerometerAvailable() = 0;
-
-        //! Activate gyroscope.
-        virtual bool activateGyroscope(float updateInterval = 0.016666f) = 0;
-        
-        //! Deactivate gyroscope.
-        virtual bool deactivateGyroscope() = 0;
-        
-        //! Is gyroscope active.
-        virtual bool isGyroscopeActive() = 0;
-        
-        //! Is gyroscope available.
-        virtual bool isGyroscopeAvailable() = 0;
-        
-        //! Activate device motion.
-        virtual bool activateDeviceMotion(float updateInterval = 0.016666f) = 0;
-        
-        //! Deactivate device motion.
-        virtual bool deactivateDeviceMotion() = 0;
-        
-        //! Is device motion active.
-        virtual bool isDeviceMotionActive() = 0;
-        
-        //! Is device motion available.
-        virtual bool isDeviceMotionAvailable() = 0;
 
 		//! Set the current Gamma Value for the Display
 		virtual bool setGammaRamp(f32 red, f32 green, f32 blue,
@@ -296,21 +253,6 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
-
-		//! Get context manager
-		virtual video::IContextManager* getContextManager() =0;
-
-		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behavior.
-		/** When set to 0 no double- and tripleclicks will be generated.
-		\param timeMs maximal time in milliseconds for two consecutive clicks to be recognized as double click
-		*/
-		virtual void setDoubleClickTime(u32 timeMs) =0;
-
-		//! Get the maximal elapsed time between 2 clicks to generate double- and tripleclicks for the mouse.
-		/** When return value is 0 no double- and tripleclicks will be generated.
-		\return maximal time in milliseconds for two consecutive clicks to be recognized as double click
-		*/
-		virtual u32 getDoubleClickTime() const =0;
 
 		//! Remove messages pending in the system message loop
 		/** This function is usually used after messages have been buffered for a longer time, for example
@@ -364,18 +306,6 @@ namespace irr
 #endif
 				case video::EDT_OPENGL:
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-					return true;
-#else
-					return false;
-#endif
-				case video::EDT_OGLES1:
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-					return true;
-#else
-					return false;
-#endif
-				case video::EDT_OGLES2:
-#ifdef _IRR_COMPILE_WITH_OGLES2_
 					return true;
 #else
 					return false;

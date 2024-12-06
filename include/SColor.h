@@ -31,50 +31,6 @@ namespace video
 		//! Default 32 bit color format. 8 bits are used for every component: red, green, blue and alpha.
 		ECF_A8R8G8B8,
 
-		/** Compressed image formats. **/
-
-		//! DXT1 color format.
-		ECF_DXT1,
-
-		//! DXT2 color format.
-		ECF_DXT2,
-
-		//! DXT3 color format.
-		ECF_DXT3,
-
-		//! DXT4 color format.
-		ECF_DXT4,
-
-		//! DXT5 color format.
-		ECF_DXT5,
-
-		//! PVRTC RGB 2bpp.
-		ECF_PVRTC_RGB2,
-
-		//! PVRTC ARGB 2bpp.
-		ECF_PVRTC_ARGB2,
-
-		//! PVRTC RGB 4bpp.
-		ECF_PVRTC_RGB4,
-
-		//! PVRTC ARGB 4bpp.
-		ECF_PVRTC_ARGB4,
-
-		//! PVRTC2 ARGB 2bpp.
-		ECF_PVRTC2_ARGB2,
-
-		//! PVRTC2 ARGB 4bpp.
-		ECF_PVRTC2_ARGB4,
-		
-		//! ETC1 RGB.
-		ECF_ETC1,
-
-		//! ETC2 RGB.
-		ECF_ETC2_RGB,
-
-		//! ETC2 ARGB.
-		ECF_ETC2_ARGB,
-
 		/** Floating Point formats. The following formats may only be used for render target textures. */
 
 		//! 16 bit floating point format using 16 bits for the red channel.
@@ -379,7 +335,7 @@ namespace video
 
 		//! Interpolates the color with a f32 value to another color
 		/** \param other: Other color
-		\param d: value between 0.0f and 1.0f
+		\param d: value between 0.0f and 1.0f. d=0 returns other, d=1 returns this, values between interpolate.
 		\return Interpolated color. */
 		SColor getInterpolated(const SColor &other, f32 d) const
 		{
@@ -456,14 +412,14 @@ namespace video
 				{
 					u16 * dest = (u16*)data;
 					*dest = video::A8R8G8B8toA1R5G5B5( color );
-				}
+				} 
 				break;
 
 				case ECF_R5G6B5:
 				{
 					u16 * dest = (u16*)data;
 					*dest = video::A8R8G8B8toR5G6B5( color );
-				}
+				} 
 				break;
 
 				case ECF_R8G8B8:
@@ -472,14 +428,14 @@ namespace video
 					dest[0] = (u8)getRed();
 					dest[1] = (u8)getGreen();
 					dest[2] = (u8)getBlue();
-				}
+				} 
 				break;
 
 				case ECF_A8R8G8B8:
 				{
 					u32 * dest = (u32*)data;
 					*dest = color;
-				}
+				} 
 				break;
 
 				default:

@@ -427,21 +427,6 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) = 0;
-		
-		//! Creates a cube texture from loaded IImages.
-		/** \param name A name for the texture. Later calls of
-		getTexture() with this name will return this texture
-		\param posXImage Image (positive X) the texture is created from.
-		\param negXImage Image (negative X) the texture is created from.
-		\param posYImage Image (positive Y) the texture is created from.
-		\param negYImage Image (negative Y) the texture is created from.
-		\param posZImage Image (positive Z) the texture is created from.
-		\param negZImage Image (negative Z) the texture is created from.
-		\return Pointer to the newly created texture. This pointer
-		should not be dropped. See IReferenceCounted::drop() for more
-		information. */
-		virtual ITexture* addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
-			IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -452,7 +437,9 @@ namespace video
 		\param format The color format of the render target. Floating point formats are supported.
 		\return Pointer to the created texture or 0 if the texture
 		could not be created. This pointer should not be dropped. See
-		IReferenceCounted::drop() for more information. */
+		IReferenceCounted::drop() for more information.
+		You may want to remove it from driver texture cache with removeTexture if you no longer need it.
+		*/
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
@@ -530,7 +517,7 @@ namespace video
 		example in picture edit programs. To avoid this problem, you
 		could use the makeColorKeyTexture method, which takes the
 		position of a pixel instead a color value.
-		\param zeroTexels \deprecated If set to true, then any texels that match
+		\param zeroTexels (deprecated) If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behavior matches the legacy (buggy) behavior prior
 		to release 1.5 and is provided for backwards compatibility only.
@@ -547,7 +534,7 @@ namespace video
 		\param colorKeyPixelPos Position of a pixel with the color key
 		color. Every texel with this color will become fully transparent as
 		described above.
-		\param zeroTexels \deprecated If set to true, then any texels that match
+		\param zeroTexels (deprecated) If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behavior matches the legacy (buggy) behavior prior
 		to release 1.5 and is provided for backwards compatibility only.
@@ -969,7 +956,7 @@ namespace video
 		\param color Color of the pixel to draw. */
 		virtual void drawPixel(u32 x, u32 y, const SColor& color) =0;
 
-		//! Draws a non filled concyclic regular 2d polyon.
+		//! Draws a non filled concyclic regular 2d polygon.
 		/** This method can be used to draw circles, but also
 		triangles, tetragons, pentagons, hexagons, heptagons, octagons,
 		enneagons, decagons, hendecagons, dodecagon, triskaidecagons,
@@ -1427,14 +1414,14 @@ namespace video
 		virtual SOverrideMaterial& getOverrideMaterial() =0;
 
 		//! Get the 2d override material for altering its values
-		/** The 2d override materual allows to alter certain render
+		/** The 2d override material allows to alter certain render
 		states of the 2d methods. Not all members of SMaterial are
 		honored, especially not MaterialType and Textures. Moreover,
 		the zbuffer is always ignored, and lighting is always off. All
 		other flags can be changed, though some might have to effect
 		in most cases.
 		Please note that you have to enable/disable this effect with
-		enableInitMaterial2D(). This effect is costly, as it increases
+		enableMaterial2D(). This effect is costly, as it increases
 		the number of state changes considerably. Always reset the
 		values when done.
 		\return Material reference which should be altered to reflect

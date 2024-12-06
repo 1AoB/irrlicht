@@ -98,13 +98,6 @@ public:
 	//! fills the surface with given color
 	virtual void fill(const SColor &color) =0;
 
-	//! Inform whether the image is compressed
-	virtual bool isCompressed() const = 0;
-
-	//! Check whether the image has MipMaps
-	/** \return True if image has MipMaps, else false. */
-	virtual bool hasMipMaps() const = 0;
-
 	//! get the amount of Bits per Pixel of the given color format
 	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
 	{
@@ -117,28 +110,6 @@ public:
 		case ECF_R8G8B8:
 			return 24;
 		case ECF_A8R8G8B8:
-			return 32;
-		case ECF_DXT1:
-			return 16;
-		case ECF_DXT2:
-		case ECF_DXT3:
-		case ECF_DXT4:
-		case ECF_DXT5:
-			return 32;
-		case ECF_PVRTC_RGB2:
-			return 12;
-		case ECF_PVRTC_ARGB2:
-		case ECF_PVRTC2_ARGB2:
-			return 16;
-		case ECF_PVRTC_RGB4:
-			return 24;
-		case ECF_PVRTC_ARGB4:
-		case ECF_PVRTC2_ARGB4:
-			return 32;
-		case ECF_ETC1:
-		case ECF_ETC2_RGB:
-			return 24;
-		case ECF_ETC2_ARGB:
 			return 32;
 		case ECF_R16F:
 			return 16;
@@ -157,85 +128,12 @@ public:
 		}
 	}
 
-	//! calculate compressed image size for selected width and height.
-	static u32 getCompressedImageSize(ECOLOR_FORMAT format, u32 width, u32 height)
-	{
-		if (!isCompressedFormat(format))
-			return 0;
-
-		u32 compressedImageSize = 0;
-
-		switch (format)
-		{
-			case ECF_DXT1:
-				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 8;
-				break;
-			case ECF_DXT2:
-			case ECF_DXT3:
-			case ECF_DXT4:
-			case ECF_DXT5:
-				compressedImageSize = ((width + 3) / 4) * ((height + 3) / 4) * 16;
-				break;
-			case ECF_PVRTC_RGB2:
-			case ECF_PVRTC_ARGB2:
-				compressedImageSize = (core::max_<u32>(width, 16) * core::max_<u32>(height, 8) * 2 + 7) / 8;
-				break;
-			case ECF_PVRTC_RGB4:
-			case ECF_PVRTC_ARGB4:
-				compressedImageSize = (core::max_<u32>(width, 8) * core::max_<u32>(height, 8) * 4 + 7) / 8;
-				break;
-			case ECF_PVRTC2_ARGB2:
-				compressedImageSize = core::ceil32(width / 8.0f) * core::ceil32(height / 4.0f) * 8;
-				break;
-			case ECF_PVRTC2_ARGB4:
-			case ECF_ETC1:
-			case ECF_ETC2_RGB:
-				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 8;
-				break;
-			case ECF_ETC2_ARGB:
-				compressedImageSize = core::ceil32(width / 4.0f) * core::ceil32(height / 4.0f) * 16;
-				break;
-			default:
-				break;
-		}
-
-		return compressedImageSize;
-	}
-
-	//! test if this is compressed color format
-	static bool isCompressedFormat(const ECOLOR_FORMAT format)
-	{
-		switch(format)
-		{
-			case ECF_DXT1:
-			case ECF_DXT2:
-			case ECF_DXT3:
-			case ECF_DXT4:
-			case ECF_DXT5:
-			case ECF_PVRTC_RGB2:
-			case ECF_PVRTC_ARGB2:
-			case ECF_PVRTC2_ARGB2:
-			case ECF_PVRTC_RGB4:
-			case ECF_PVRTC_ARGB4:
-			case ECF_PVRTC2_ARGB4:
-			case ECF_ETC1:
-			case ECF_ETC2_RGB:
-			case ECF_ETC2_ARGB:
-				return true;
-			default:
-				return false;
-		}
-	}
-
 	//! test if the color format is only viable for RenderTarget textures
 	/** Since we don't have support for e.g. floating point IImage formats
 	one should test if the color format can be used for arbitrary usage, or
 	if it is restricted to RTTs. */
 	static bool isRenderTargetOnlyFormat(const ECOLOR_FORMAT format)
 	{
-		if (isCompressedFormat(format))
-			return false;
-
 		switch(format)
 		{
 			case ECF_A1R5G5B5:
