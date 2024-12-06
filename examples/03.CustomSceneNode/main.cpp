@@ -70,15 +70,14 @@ public:
 	{
 		Material.Wireframe = false;
 		Material.Lighting = false;
-		Material.Thickness=0.f;
 
-		Vertices[0] = video::S3DVertex(0,0,10, 5,1,0,
+		Vertices[0] = video::S3DVertex(0,0,10, 1,1,0,
 				video::SColor(255,0,255,255), 0, 1);
-		Vertices[1] = video::S3DVertex(10,0,-10, 10,0,0,
+		Vertices[1] = video::S3DVertex(10,0,-10, 1,0,0,
 				video::SColor(255,255,0,255), 1, 1);
-		Vertices[2] = video::S3DVertex(0,20,0, 20,1,1,
+		Vertices[2] = video::S3DVertex(0,20,0, 0,1,1,
 				video::SColor(255,255,255,0), 1, 0);
-		Vertices[3] = video::S3DVertex(-10,0,-10, 40,0,1,
+		Vertices[3] = video::S3DVertex(-10,0,-10, 0,0,1,
 				video::SColor(255,0,255,0), 0, 0);
 
 	/*
@@ -127,10 +126,7 @@ public:
 	*/
 	virtual void render()
 	{
-		/* Indices into the 'Vertices' array. A triangle needs 3 vertices 
-		so you have to pass the 3 corresponding indices for each triangle to 
-		tell which of the vertices should be used for it.	*/
-		u16 indices[] = {	0,2,3, 2,1,3, 1,0,3, 2,0,1	}; 
+		u16 indices[] = {	0,2,3, 2,1,3, 1,0,3, 2,0,1	};
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 		driver->setMaterial(Material);

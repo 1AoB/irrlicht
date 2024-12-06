@@ -682,7 +682,7 @@ void CQuake3EventHandler::CreateGUI()
 	gui.VideoDriver->addItem(L"Direct3D 9.0c", EDT_DIRECT3D9 );
 	gui.VideoDriver->addItem(L"Direct3D 8.1", EDT_DIRECT3D8 );
 	gui.VideoDriver->addItem(L"OpenGL 1.5", EDT_OPENGL);
-	gui.VideoDriver->addItem(L"Software Renderer", EDT_OGLES1);
+	gui.VideoDriver->addItem(L"Software Renderer", EDT_SOFTWARE);
 	gui.VideoDriver->addItem(L"Burning's Video (TM) Thomas Alten", EDT_BURNINGSVIDEO);
 	gui.VideoDriver->setSelected ( gui.VideoDriver->getIndexForItemData ( Game->deviceParam.DriverType ) );
 	gui.VideoDriver->setToolTipText ( L"Use a VideoDriver" );
