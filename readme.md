@@ -4,7 +4,7 @@ This warehouse fork is from https://github.com/freeminer/irrlicht
 
 **Features**: A lightweight 3D engine that is easy to use and supports multiple rendering backends.
 
-**Suitable scenario * *:Small 3D projects, rapid prototyping development.
+**Suitable scenario**:Small 3D projects, rapid prototyping development.
 
 **Fork URL**: [Irrlicht 官方网站](https://github.com/freeminer/irrlicht)
 
