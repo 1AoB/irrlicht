@@ -681,14 +681,11 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.RasterCaps & (D3DPRASTERCAPS_DEPTHBIAS|D3DPRASTERCAPS_SLOPESCALEDEPTHBIAS)) != 0;
 	case EVDF_BLEND_OPERATIONS:
 	case EVDF_TEXTURE_MATRIX:
+#ifdef _IRR_COMPILE_WITH_CG_
+	// available iff. define is present
+	case EVDF_CG:
+#endif
 		return true;
-	case EVDF_TEXTURE_COMPRESSED_DXT:
-		return true;
-	case EVDF_TEXTURE_COMPRESSED_PVRTC:
-	case EVDF_TEXTURE_COMPRESSED_PVRTC2:
-	case EVDF_TEXTURE_COMPRESSED_ETC1:
-	case EVDF_TEXTURE_COMPRESSED_ETC2:
-		return false;
 	default:
 		return false;
 	};
@@ -755,9 +752,6 @@ bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 	else
 	{
 		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9Texture());
-
-		if (stage <= 4)
-            pID3DDevice->SetTexture(D3DVERTEXTEXTURESAMPLER0 + stage, ((const CD3D9Texture*)texture)->getDX9Texture());
 	}
 	return true;
 }
@@ -781,12 +775,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 //! returns a device dependent texture from a software surface (IImage)
 video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name, void* mipmapData)
 {
-	CD3D9Texture* texture = 0;
-
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-		texture = new CD3D9Texture(surface, this, TextureCreationFlags, name, mipmapData);
-
-	return texture;
+	return new CD3D9Texture(surface, this, TextureCreationFlags, name, mipmapData);
 }
 
 
@@ -2214,7 +2203,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	{
 		switch (material.ZBuffer)
 		{
-		case ECFN_DISABLED:
+		case ECFN_NEVER:
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 			break;
 		case ECFN_LESSEQUAL:
@@ -2245,9 +2234,6 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
 			break;
-		case ECFN_NEVER:
-			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
 		}
 	}
 
@@ -3089,31 +3075,6 @@ const core::matrix4& CD3D9Driver::getTransform(E_TRANSFORMATION_STATE state) con
 }
 
 
-//! Get a vertex shader constant index.
-s32 CD3D9Driver::getVertexShaderConstantID(const c8* name)
-{
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->getVariableID(true, name);
-	}
-
-	return -1;
-}
-
-//! Get a pixel shader constant index.
-s32 CD3D9Driver::getPixelShaderConstantID(const c8* name)
-{
-	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-	{
-		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->getVariableID(false, name);
-	}
-
-	return -1;
-}
-
-
 //! Sets a vertex shader constant.
 void CD3D9Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
@@ -3130,13 +3091,26 @@ void CD3D9Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32
 }
 
 
-//! Sets a constant for the vertex shader based on an index.
-bool CD3D9Driver::setVertexShaderConstant(s32 index, const f32* floats, int count)
+//! Sets a constant for the vertex shader based on a name.
+bool CD3D9Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
 {
 	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
 	{
 		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(true, index, floats, count);
+		return r->setVariable(true, name, floats, count);
+	}
+
+	return false;
+}
+
+
+//! Bool interface for the above.
+bool CD3D9Driver::setVertexShaderConstant(const c8* name, const bool* bools, int count)
+{
+	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
+	{
+		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
+		return r->setVariable(true, name, bools, count);
 	}
 
 	return false;
@@ -3144,25 +3118,38 @@ bool CD3D9Driver::setVertexShaderConstant(s32 index, const f32* floats, int coun
 
 
 //! Int interface for the above.
-bool CD3D9Driver::setVertexShaderConstant(s32 index, const s32* ints, int count)
+bool CD3D9Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
 {
 	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
 	{
 		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(true, index, ints, count);
+		return r->setVariable(true, name, ints, count);
 	}
 
 	return false;
 }
 
 
-//! Sets a constant for the pixel shader based on an index.
-bool CD3D9Driver::setPixelShaderConstant(s32 index, const f32* floats, int count)
+//! Sets a constant for the pixel shader based on a name.
+bool CD3D9Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
 	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
 	{
 		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(false, index, floats, count);
+		return r->setVariable(false, name, floats, count);
+	}
+
+	return false;
+}
+
+
+//! Bool interface for the above.
+bool CD3D9Driver::setPixelShaderConstant(const c8* name, const bool* bools, int count)
+{
+	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
+	{
+		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
+		return r->setVariable(false, name, bools, count);
 	}
 
 	return false;
@@ -3170,12 +3157,12 @@ bool CD3D9Driver::setPixelShaderConstant(s32 index, const f32* floats, int count
 
 
 //! Int interface for the above.
-bool CD3D9Driver::setPixelShaderConstant(s32 index, const s32* ints, int count)
+bool CD3D9Driver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
 {
 	if (Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
 	{
 		CD3D9MaterialRenderer* r = (CD3D9MaterialRenderer*)MaterialRenderers[Material.MaterialType].Renderer;
-		return r->setVariable(false, index, ints, count);
+		return r->setVariable(false, name, ints, count);
 	}
 
 	return false;

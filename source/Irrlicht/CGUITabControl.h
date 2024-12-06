@@ -34,36 +34,36 @@ namespace gui
 
 		//! Returns number of this tab in tabcontrol. Can be accessed
 		//! later IGUITabControl::getTab() by this number.
-		virtual s32 getNumber() const _IRR_OVERRIDE_;
+		virtual s32 getNumber() const;
 
 		//! Sets the number
 		virtual void setNumber(s32 n);
 
 		//! draws the element and its children
-		virtual void draw() _IRR_OVERRIDE_;
+		virtual void draw();
 
 		//! sets if the tab should draw its background
-		virtual void setDrawBackground(bool draw=true) _IRR_OVERRIDE_;
+		virtual void setDrawBackground(bool draw=true);
 
 		//! sets the color of the background, if it should be drawn.
-		virtual void setBackgroundColor(video::SColor c) _IRR_OVERRIDE_;
+		virtual void setBackgroundColor(video::SColor c);
 
 		//! sets the color of the text
-		virtual void setTextColor(video::SColor c) _IRR_OVERRIDE_;
+		virtual void setTextColor(video::SColor c);
 
 		//! returns true if the tab is drawing its background, false if not
-		virtual bool isDrawingBackground() const _IRR_OVERRIDE_;
+		virtual bool isDrawingBackground() const;
 
 		//! returns the color of the background
-		virtual video::SColor getBackgroundColor() const _IRR_OVERRIDE_;
+		virtual video::SColor getBackgroundColor() const;
 
-		virtual video::SColor getTextColor() const _IRR_OVERRIDE_;
+		virtual video::SColor getTextColor() const;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 		//! only for internal use by CGUITabControl
 		void refreshSkinColors();
@@ -92,79 +92,79 @@ namespace gui
 		virtual ~CGUITabControl();
 
 		//! Adds a tab
-		virtual IGUITab* addTab(const wchar_t* caption, s32 id=-1) _IRR_OVERRIDE_;
+		virtual IGUITab* addTab(const wchar_t* caption, s32 id=-1);
 
 		//! Adds a tab that has already been created
 		virtual void addTab(CGUITab* tab);
 
 		//! Insert the tab at the given index
-		virtual IGUITab* insertTab(s32 idx, const wchar_t* caption, s32 id=-1) _IRR_OVERRIDE_;
+		virtual IGUITab* insertTab(s32 idx, const wchar_t* caption, s32 id=-1);
 
 		//! Removes a tab from the tabcontrol
-		virtual void removeTab(s32 idx) _IRR_OVERRIDE_;
+		virtual void removeTab(s32 idx);
 
 		//! Clears the tabcontrol removing all tabs
-		virtual void clear() _IRR_OVERRIDE_;
+		virtual void clear();
 
 		//! Returns amount of tabs in the tabcontrol
-		virtual s32 getTabCount() const _IRR_OVERRIDE_;
+		virtual s32 getTabCount() const;
 
 		//! Returns a tab based on zero based index
-		virtual IGUITab* getTab(s32 idx) const _IRR_OVERRIDE_;
+		virtual IGUITab* getTab(s32 idx) const;
 
 		//! Brings a tab to front.
-		virtual bool setActiveTab(s32 idx) _IRR_OVERRIDE_;
+		virtual bool setActiveTab(s32 idx);
 
 		//! Brings a tab to front.
-		virtual bool setActiveTab(IGUITab *tab) _IRR_OVERRIDE_;
+		virtual bool setActiveTab(IGUITab *tab);
 
 		//! Returns which tab is currently active
-		virtual s32 getActiveTab() const _IRR_OVERRIDE_;
+		virtual s32 getActiveTab() const;
 
 		//! get the the id of the tab at the given absolute coordinates
-		virtual s32 getTabAt(s32 xpos, s32 ypos) const _IRR_OVERRIDE_;
+		virtual s32 getTabAt(s32 xpos, s32 ypos) const;
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
+		virtual bool OnEvent(const SEvent& event);
 
 		//! draws the element and its children
-		virtual void draw() _IRR_OVERRIDE_;
+		virtual void draw();
 
 		//! Removes a child.
-		virtual void removeChild(IGUIElement* child) _IRR_OVERRIDE_;
+		virtual void removeChild(IGUIElement* child);
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 		//! Set the height of the tabs
-		virtual void setTabHeight( s32 height ) _IRR_OVERRIDE_;
+		virtual void setTabHeight( s32 height );
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 		//! Get the height of the tabs
-		virtual s32 getTabHeight() const _IRR_OVERRIDE_;
+		virtual s32 getTabHeight() const;
 
 		//! set the maximal width of a tab. Per default width is 0 which means "no width restriction".
-		virtual void setTabMaxWidth(s32 width ) _IRR_OVERRIDE_;
+		virtual void setTabMaxWidth(s32 width );
 
 		//! get the maximal width of a tab
-		virtual s32 getTabMaxWidth() const _IRR_OVERRIDE_;
+		virtual s32 getTabMaxWidth() const;
 
 		//! Set the alignment of the tabs
 		//! note: EGUIA_CENTER is not an option
-		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment ) _IRR_OVERRIDE_;
+		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment );
 
 		//! Get the alignment of the tabs
-		virtual gui::EGUI_ALIGNMENT getTabVerticalAlignment() const _IRR_OVERRIDE_;
+		virtual gui::EGUI_ALIGNMENT getTabVerticalAlignment() const;
 
 		//! Set the extra width added to tabs on each side of the text
-		virtual void setTabExtraWidth( s32 extraWidth ) _IRR_OVERRIDE_;
+		virtual void setTabExtraWidth( s32 extraWidth );
 
 		//! Get the extra width added to tabs on each side of the text
-		virtual s32 getTabExtraWidth() const _IRR_OVERRIDE_;
+		virtual s32 getTabExtraWidth() const;
 
 		//! Update the position of the element, decides scroll button status
-		virtual void updateAbsolutePosition() _IRR_OVERRIDE_;
+		virtual void updateAbsolutePosition();
 
 	private:
 

@@ -33,53 +33,47 @@ namespace irr
 		virtual ~CIrrDeviceFB();
 
 		//! runs the device. Returns false if device wants to be deleted
-		virtual bool run() _IRR_OVERRIDE_;
+		virtual bool run();
 
 		//! Cause the device to temporarily pause execution and let other processes to run
 		// This should bring down processor usage without major performance loss for Irrlicht
-		virtual void yield() _IRR_OVERRIDE_;
+		virtual void yield();
 
 		//! Pause execution and let other processes to run for a specified amount of time.
-		virtual void sleep(u32 timeMs, bool pauseTimer) _IRR_OVERRIDE_;
+		virtual void sleep(u32 timeMs, bool pauseTimer);
 
 		//! sets the caption of the window
-		virtual void setWindowCaption(const wchar_t* text) _IRR_OVERRIDE_;
+		virtual void setWindowCaption(const wchar_t* text);
 
 		//! returns if window is active. if not, nothing need to be drawn
-		virtual bool isWindowActive() const _IRR_OVERRIDE_;
+		virtual bool isWindowActive() const;
 
 		//! returns if window has focus
-		virtual bool isWindowFocused() const _IRR_OVERRIDE_;
+		virtual bool isWindowFocused() const;
 
 		//! returns if window is minimized
-		virtual bool isWindowMinimized() const _IRR_OVERRIDE_;
+		virtual bool isWindowMinimized() const;
 
 		//! Minimizes window
-		virtual void minimizeWindow() _IRR_OVERRIDE_;
+		virtual void minimizeWindow();
 
 		//! Maximizes window
-		virtual void maximizeWindow() _IRR_OVERRIDE_;
+		virtual void maximizeWindow();
 
 		//! Restores original window size
-		virtual void restoreWindow() _IRR_OVERRIDE_;
-
-		//! returns current window position (not supported for this device)
-		virtual core::position2di getWindowPosition() _IRR_OVERRIDE_
-		{
-			return core::position2di(-1, -1);
-		}
+		virtual void restoreWindow();
 
 		//! presents a surface in the client area
-		virtual bool present(video::IImage* surface, void* windowId = 0, core::rect<s32>* src=0 ) _IRR_OVERRIDE_;
+		virtual bool present(video::IImage* surface, void* windowId = 0, core::rect<s32>* src=0 );
 
 		//! notifies the device that it should close itself
-		virtual void closeDevice() _IRR_OVERRIDE_;
+		virtual void closeDevice();
 
 		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizable(bool resize=false) _IRR_OVERRIDE_;
+		virtual void setResizable(bool resize=false);
 
 		//! Returns the type of this device
-		virtual E_DEVICE_TYPE getType() const _IRR_OVERRIDE_;
+		virtual E_DEVICE_TYPE getType() const;
 
 	private:
 
@@ -105,56 +99,56 @@ namespace irr
 			}
 
 			//! Changes the visible state of the mouse cursor.
-			virtual void setVisible(bool visible) _IRR_OVERRIDE_
+			virtual void setVisible(bool visible)
 			{
 				IsVisible = visible;
 			}
 
 			//! Returns if the cursor is currently visible.
-			virtual bool isVisible() const _IRR_OVERRIDE_
+			virtual bool isVisible() const
 			{
 				return IsVisible;
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(const core::position2d<f32> &pos) _IRR_OVERRIDE_
+			virtual void setPosition(const core::position2d<f32> &pos)
 			{
 				setPosition(pos.X, pos.Y);
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(f32 x, f32 y) _IRR_OVERRIDE_
+			virtual void setPosition(f32 x, f32 y)
 			{
 				setPosition((s32)(x*Device->CreationParams.WindowSize.Width), (s32)(y*Device->CreationParams.WindowSize.Height));
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(const core::position2d<s32> &pos) _IRR_OVERRIDE_
+			virtual void setPosition(const core::position2d<s32> &pos)
 			{
 				setPosition(pos.X, pos.Y);
 			}
 
 			//! Sets the new position of the cursor.
-			virtual void setPosition(s32 x, s32 y) _IRR_OVERRIDE_
+			virtual void setPosition(s32 x, s32 y)
 			{
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual const core::position2d<s32>& getPosition() _IRR_OVERRIDE_
+			virtual const core::position2d<s32>& getPosition()
 			{
 				updateCursorPos();
 				return CursorPos;
 			}
 
 			//! Returns the current position of the mouse cursor.
-			virtual core::position2d<f32> getRelativePosition() _IRR_OVERRIDE_
+			virtual core::position2d<f32> getRelativePosition()
 			{
 				updateCursorPos();
 				return core::position2d<f32>(CursorPos.X / (f32)Device->CreationParams.WindowSize.Width,
 					CursorPos.Y / (f32)Device->CreationParams.WindowSize.Height);
 			}
 
-			virtual void setReferenceRect(core::rect<s32>* rect=0) _IRR_OVERRIDE_
+			virtual void setReferenceRect(core::rect<s32>* rect=0)
 			{
 			}
 

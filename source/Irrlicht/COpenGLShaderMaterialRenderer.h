@@ -35,8 +35,8 @@ namespace video
 {
 
 class COpenGLDriver;
-class COpenGLMaterialRenderer;
 class IShaderConstantSetCallBack;
+class IMaterialRenderer;
 
 //! Class for using vertex and pixel shaders with OpenGL
 class COpenGLShaderMaterialRenderer : public IMaterialRenderer
@@ -46,20 +46,20 @@ public:
 	//! Constructor
 	COpenGLShaderMaterialRenderer(COpenGLDriver* driver,
 		s32& outMaterialTypeNr, const c8* vertexShaderProgram, const c8* pixelShaderProgram,
-		IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
+		IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData);
 
 	//! Destructor
 	virtual ~COpenGLShaderMaterialRenderer();
 
 	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
-		bool resetAllRenderstates, IMaterialRendererServices* services) _IRR_OVERRIDE_;
+		bool resetAllRenderstates, IMaterialRendererServices* services);
 
-	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype) _IRR_OVERRIDE_;
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
-	virtual void OnUnsetMaterial() _IRR_OVERRIDE_;
+	virtual void OnUnsetMaterial();
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent() const _IRR_OVERRIDE_;
+	virtual bool isTransparent() const;
 
 protected:
 
@@ -67,7 +67,7 @@ protected:
 	//! create a fall back material for example.
 	COpenGLShaderMaterialRenderer(COpenGLDriver* driver,
 					IShaderConstantSetCallBack* callback,
-					E_MATERIAL_TYPE baseMaterial, s32 userData=0);
+					IMaterialRenderer* baseMaterial, s32 userData=0);
 
 	// must not be called more than once!
 	void init(s32& outMaterialTypeNr, const c8* vertexShaderProgram,
@@ -79,7 +79,7 @@ protected:
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
-	COpenGLMaterialRenderer* BaseMaterial;
+	IMaterialRenderer* BaseMaterial;
 
 	GLuint VertexShader;
 	// We have 4 values here, [0] is the non-fog version, the other three are

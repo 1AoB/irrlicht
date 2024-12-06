@@ -7,8 +7,6 @@
 
 #include "ITexture.h"
 #include "IImage.h"
-#include "SMaterialLayer.h"
-#include "irrArray.h"
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -47,79 +45,51 @@ namespace video
 {
 
 class COpenGLDriver;
-
 //! OpenGL texture.
 class COpenGLTexture : public ITexture
 {
 public:
 
-	//! Cache structure.
-	struct SStatesCache
-	{
-		SStatesCache() : WrapU(ETC_REPEAT), WrapV(ETC_REPEAT),
-				LODBias(0), AnisotropicFilter(0),
-				BilinearFilter(false), TrilinearFilter(false),
-				MipMapStatus(false), IsCached(false)
-		{
-		}
-
-		u8 WrapU;
-		u8 WrapV;
-		s8 LODBias;
-		u8 AnisotropicFilter;
-		bool BilinearFilter;
-		bool TrilinearFilter;
-		bool MipMapStatus;
-		bool IsCached;
-	};
-
 	//! constructor
 	COpenGLTexture(IImage* surface, const io::path& name, void* mipmapData=0, COpenGLDriver* driver=0);
-
-	//! constructor
-	COpenGLTexture(const io::path& name, IImage* posXImage, IImage* negXImage, IImage* posYImage,
-		IImage* negYImage, IImage* posZImage, IImage* negZImage, COpenGLDriver* driver=0);
 
 	//! destructor
 	virtual ~COpenGLTexture();
 
 	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_;
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0);
 
 	//! unlock function
-	virtual void unlock() _IRR_OVERRIDE_;
+	virtual void unlock();
 
 	//! Returns original size of the texture (image).
-	virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_;
+	virtual const core::dimension2d<u32>& getOriginalSize() const;
 
 	//! Returns size of the texture.
-	virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_;
+	virtual const core::dimension2d<u32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, that created it)
-	virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_;
+	virtual E_DRIVER_TYPE getDriverType() const;
 
 	//! returns color format of texture
-	virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_;
+	virtual ECOLOR_FORMAT getColorFormat() const;
 
 	//! returns pitch of texture (in bytes)
-	virtual u32 getPitch() const _IRR_OVERRIDE_;
+	virtual u32 getPitch() const;
 
 	//! return open gl texture name
 	GLuint getOpenGLTextureName() const;
 
-	//! return open gl texture type
-	GLenum getOpenGLTextureType() const;
-
 	//! return whether this texture has mipmaps
-	virtual bool hasMipMaps() const _IRR_OVERRIDE_;
+	virtual bool hasMipMaps() const;
 
 	//! Regenerates the mip map levels of the texture.
 	/** Useful after locking and modifying the texture
 	\param mipmapData Pointer to raw mipmap data, including all necessary mip levels, in the same format as the main texture image. If not set the mipmaps are derived from the main image. */
-	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
+	virtual void regenerateMipMapLevels(void* mipmapData=0);
 
 	//! Is it a render target?
-	virtual bool isRenderTarget() const _IRR_OVERRIDE_;
+	virtual bool isRenderTarget() const;
 
 	//! Is it a FrameBufferObject?
 	virtual bool isFrameBufferObject() const;
@@ -133,9 +103,6 @@ public:
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
 
-	//! Get an access to texture states cache.
-	SStatesCache& getStatesCache() const;
-
 protected:
 
 	//! protected constructor with basic setup, no GL texture name created, for derived classes
@@ -145,29 +112,26 @@ protected:
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
 	//! Get the OpenGL color format parameters based on the given Irrlicht color format
-	void getFormatParameters(ECOLOR_FORMAT format, GLint& internalFormat, GLint& filtering,
-		GLenum& pixelFormat, GLenum& type);
+	GLint getOpenGLFormatAndParametersFromColorFormat(
+		ECOLOR_FORMAT format, GLint& filtering, GLenum& colorformat, GLenum& type);
 
 	//! get important numbers of the image and hw texture
 	void getImageValues(IImage* image);
 
 	//! copies the texture into an OpenGL texture.
 	/** \param newTexture True if method is called for a newly created texture for the first time. Otherwise call with false to improve memory handling.
-	\param imageNumber Inform which image should be used for upload.
-	\param regMipmap Inform if regenerate mipmap should be call.
 	\param mipmapData Pointer to raw mipmap data, including all necessary mip levels, in the same format as the main texture image.
 	\param mipLevel If set to non-zero, only that specific miplevel is updated, using the MipImage member. */
-	void uploadTexture(bool newTexture=false, u32 imageNumber=0, bool regMipmap = false, void* mipmapData=0, u32 mipLevel=0);
+	void uploadTexture(bool newTexture=false, void* mipmapData=0, u32 mipLevel=0);
 
 	core::dimension2d<u32> ImageSize;
 	core::dimension2d<u32> TextureSize;
 	ECOLOR_FORMAT ColorFormat;
 	COpenGLDriver* Driver;
-	core::array<IImage*> Image;
+	IImage* Image;
 	IImage* MipImage;
 
 	GLuint TextureName;
-	GLenum TextureType;
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;
@@ -176,12 +140,9 @@ protected:
 	bool HasMipMaps;
 	bool MipmapLegacyMode;
 	bool IsRenderTarget;
-	bool IsCompressed;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
 	bool KeepImage;
-
-	mutable SStatesCache StatesCache;
 };
 
 //! OpenGL FBO texture.
@@ -197,13 +158,13 @@ public:
 	virtual ~COpenGLFBOTexture();
 
 	//! Is it a FrameBufferObject?
-	virtual bool isFrameBufferObject() const _IRR_OVERRIDE_;
+	virtual bool isFrameBufferObject() const;
 
 	//! Bind RenderTargetTexture
-	virtual void bindRTT() _IRR_OVERRIDE_;
+	virtual void bindRTT();
 
 	//! Unbind RenderTargetTexture
-	virtual void unbindRTT() _IRR_OVERRIDE_;
+	virtual void unbindRTT();
 
 	ITexture* DepthTexture;
 protected:
@@ -222,10 +183,10 @@ public:
 	virtual ~COpenGLFBODepthTexture();
 
 	//! Bind RenderTargetTexture
-	virtual void bindRTT() _IRR_OVERRIDE_;
+	virtual void bindRTT();
 
 	//! Unbind RenderTargetTexture
-	virtual void unbindRTT() _IRR_OVERRIDE_;
+	virtual void unbindRTT();
 
 	bool attach(ITexture*);
 

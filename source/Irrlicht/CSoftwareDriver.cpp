@@ -139,7 +139,7 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 					renderer = ETR_TEXTURE_GOURAUD_ADD;
 				}
 				else
-				if ((Material.ZBuffer==ECFN_DISABLED) && !Material.ZWriteEnable)
+				if ((Material.ZBuffer==ECFN_NEVER) && !Material.ZWriteEnable)
 					renderer = ETR_TEXTURE_GOURAUD_NOZ;
 				else
 				{
@@ -249,12 +249,7 @@ bool CSoftwareDriver::endScene()
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
 ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	CSoftwareTexture* texture = 0;
-
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-		texture = new CSoftwareTexture(surface, name, false, mipmapData);
-
-	return texture;
+	return new CSoftwareTexture(surface, name, false, mipmapData);
 }
 
 

@@ -29,34 +29,34 @@ namespace gui
 		virtual ~CGUIButton();
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
+		virtual bool OnEvent(const SEvent& event);
 
 		//! draws the element and its children
-		virtual void draw() _IRR_OVERRIDE_;
+		virtual void draw();
 
 		//! sets another skin independent font. if this is set to zero, the button uses the font of the skin.
-		virtual void setOverrideFont(IGUIFont* font=0) _IRR_OVERRIDE_;
+		virtual void setOverrideFont(IGUIFont* font=0);
 
 		//! Gets the override font (if any)
-		virtual IGUIFont* getOverrideFont() const _IRR_OVERRIDE_;
+		virtual IGUIFont* getOverrideFont() const;
 
 		//! Get the font which is used right now for drawing
-		virtual IGUIFont* getActiveFont() const _IRR_OVERRIDE_;
+		virtual IGUIFont* getActiveFont() const;
 
 		//! Sets an image which should be displayed on the button when it is in normal state.
-		virtual void setImage(video::ITexture* image=0) _IRR_OVERRIDE_;
+		virtual void setImage(video::ITexture* image=0);
 
 		//! Sets an image which should be displayed on the button when it is in normal state.
-		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) _IRR_OVERRIDE_;
+		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos);
 
 		//! Sets an image which should be displayed on the button when it is in pressed state.
-		virtual void setPressedImage(video::ITexture* image=0) _IRR_OVERRIDE_;
+		virtual void setPressedImage(video::ITexture* image=0);
 
 		//! Sets an image which should be displayed on the button when it is in pressed state.
-		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) _IRR_OVERRIDE_;
+		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos);
 
 		//! Sets the sprite bank used by the button
-		virtual void setSpriteBank(IGUISpriteBank* bank=0) _IRR_OVERRIDE_;
+		virtual void setSpriteBank(IGUISpriteBank* bank=0);
 
 		//! Sets the animated sprite for a specific button state
 		/** \param index: Number of the sprite within the sprite bank, use -1 for no sprite
@@ -65,45 +65,45 @@ namespace gui
 		\param color: The color of the sprite
 		*/
 		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
-				video::SColor color=video::SColor(255,255,255,255), bool loop=false) _IRR_OVERRIDE_;
+				video::SColor color=video::SColor(255,255,255,255), bool loop=false);
 
 		//! Sets if the button should behave like a push button. Which means it
 		//! can be in two states: Normal or Pressed. With a click on the button,
 		//! the user can change the state of the button.
-		virtual void setIsPushButton(bool isPushButton=true) _IRR_OVERRIDE_;
+		virtual void setIsPushButton(bool isPushButton=true);
 
 		//! Checks whether the button is a push button
-		virtual bool isPushButton() const _IRR_OVERRIDE_;
+		virtual bool isPushButton() const;
 
 		//! Sets the pressed state of the button if this is a pushbutton
-		virtual void setPressed(bool pressed=true) _IRR_OVERRIDE_;
+		virtual void setPressed(bool pressed=true);
 
 		//! Returns if the button is currently pressed
-		virtual bool isPressed() const _IRR_OVERRIDE_;
+		virtual bool isPressed() const;
 
 		//! Sets if the button should use the skin to draw its border
-		virtual void setDrawBorder(bool border=true) _IRR_OVERRIDE_;
+		virtual void setDrawBorder(bool border=true);
 
 		//! Checks if the button face and border are being drawn
-		virtual bool isDrawingBorder() const _IRR_OVERRIDE_;
+		virtual bool isDrawingBorder() const;
 
 		//! Sets if the alpha channel should be used for drawing images on the button (default is false)
-		virtual void setUseAlphaChannel(bool useAlphaChannel=true) _IRR_OVERRIDE_;
+		virtual void setUseAlphaChannel(bool useAlphaChannel=true);
 
 		//! Checks if the alpha channel should be used for drawing images on the button
-		virtual bool isAlphaChannelUsed() const _IRR_OVERRIDE_;
+		virtual bool isAlphaChannelUsed() const;
 
 		//! Sets if the button should scale the button images to fit
-		virtual void setScaleImage(bool scaleImage=true) _IRR_OVERRIDE_;
+		virtual void setScaleImage(bool scaleImage=true);
 
 		//! Checks whether the button scales the used images
-		virtual bool isScalingImage() const _IRR_OVERRIDE_;
+		virtual bool isScalingImage() const;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 	private:
 

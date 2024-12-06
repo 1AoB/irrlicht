@@ -36,7 +36,7 @@ public:
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0) _IRR_OVERRIDE_
+	virtual void* lock(E_TEXTURE_LOCK_MODE mode=ETLM_READ_WRITE, u32 mipmapLevel=0)
 	{
 		if (Flags & GEN_MIPMAP)
 			MipMapLOD=mipmapLevel;
@@ -44,13 +44,13 @@ public:
 	}
 
 	//! unlock function
-	virtual void unlock() _IRR_OVERRIDE_
+	virtual void unlock()
 	{
 		MipMap[MipMapLOD]->unlock();
 	}
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<u32>& getOriginalSize() const _IRR_OVERRIDE_
+	virtual const core::dimension2d<u32>& getOriginalSize() const
 	{
 		//return MipMap[0]->getDimension();
 		return OrigSize;
@@ -64,7 +64,7 @@ public:
 	}
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<u32>& getSize() const _IRR_OVERRIDE_
+	virtual const core::dimension2d<u32>& getSize() const
 	{
 		return MipMap[MipMapLOD]->getDimension();
 	}
@@ -83,13 +83,13 @@ public:
 
 
 	//! returns driver type of texture (=the driver, who created the texture)
-	virtual E_DRIVER_TYPE getDriverType() const _IRR_OVERRIDE_
+	virtual E_DRIVER_TYPE getDriverType() const
 	{
 		return EDT_BURNINGSVIDEO;
 	}
 
 	//! returns color format of texture
-	virtual ECOLOR_FORMAT getColorFormat() const _IRR_OVERRIDE_
+	virtual ECOLOR_FORMAT getColorFormat() const
 	{
 		return BURNINGSHADER_COLOR_FORMAT;
 	}
@@ -102,22 +102,22 @@ public:
 
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
-	virtual void regenerateMipMapLevels(void* mipmapData=0) _IRR_OVERRIDE_;
+	virtual void regenerateMipMapLevels(void* mipmapData=0);
 
 	//! support mipmaps
-	virtual bool hasMipMaps() const _IRR_OVERRIDE_
+	virtual bool hasMipMaps() const
 	{
 		return (Flags & GEN_MIPMAP ) != 0;
 	}
 
 	//! Returns if the texture has an alpha channel
-	virtual bool hasAlpha() const _IRR_OVERRIDE_
+	virtual bool hasAlpha() const
 	{
 		return (Flags & HAS_ALPHA ) != 0;
 	}
 
 	//! is a render target
-	virtual bool isRenderTarget() const _IRR_OVERRIDE_
+	virtual bool isRenderTarget() const
 	{
 		return (Flags & IS_RENDERTARGET) != 0;
 	}

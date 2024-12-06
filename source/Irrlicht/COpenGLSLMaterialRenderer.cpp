@@ -20,7 +20,6 @@
 #include "IVideoDriver.h"
 #include "os.h"
 #include "COpenGLDriver.h"
-#include "COpenGLMaterialRenderer.h"
 
 namespace irr
 {
@@ -42,9 +41,10 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
 		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
-		E_MATERIAL_TYPE baseMaterial,
+		video::IMaterialRenderer* baseMaterial,
 		s32 userData)
-	: Driver(driver), CallBack(callback), BaseMaterial(0), Program(0), Program2(0), UserData(userData)
+	: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
+		Program(0), Program2(0), UserData(userData)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLSLMaterialRenderer");
@@ -53,12 +53,6 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 	//entry points must always be main, and the compile target isn't selectable
 	//it is fine to ignore what has been asked for, as the compiler should spot anything wrong
 	//just check that GLSL is available
-
-	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
-		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
-	{
-		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
-	}
 
 	if (BaseMaterial)
 		BaseMaterial->grab();
@@ -77,15 +71,10 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 //! create a fall back material for example.
 COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(COpenGLDriver* driver,
 					IShaderConstantSetCallBack* callback,
-					E_MATERIAL_TYPE baseMaterial, s32 userData)
-: Driver(driver), CallBack(callback), BaseMaterial(0), Program(0), Program2(0), UserData(userData)
+					IMaterialRenderer* baseMaterial, s32 userData)
+: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
+		Program(0), Program2(0), UserData(userData)
 {
-	if (baseMaterial == EMT_ONETEXTURE_BLEND || baseMaterial == EMT_TRANSPARENT_ADD_COLOR || baseMaterial == EMT_TRANSPARENT_VERTEX_ALPHA ||
-		baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL || baseMaterial == EMT_TRANSPARENT_ALPHA_CHANNEL_REF)
-	{
-		BaseMaterial = static_cast<COpenGLMaterialRenderer*>(Driver->getMaterialRenderer(baseMaterial));
-	}
-
 	if (BaseMaterial)
 		BaseMaterial->grab();
 
@@ -106,9 +95,8 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		GLint count;
 		Driver->extGlGetAttachedObjects(Program, 8, &count, shaders);
 		// avoid bugs in some drivers, which return larger numbers
-		// use int variable to avoid compiler problems with template
-		int mincount=core::min_((int)count,8);
-		for (int i=0; i<mincount; ++i)
+		count=core::min_(count,8);
+		for (GLint i=0; i<count; ++i)
 			Driver->extGlDeleteObject(shaders[i]);
 		Driver->extGlDeleteObject(Program);
 		Program = 0;
@@ -120,9 +108,8 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		GLint count;
 		Driver->extGlGetAttachedShaders(Program2, 8, &count, shaders);
 		// avoid bugs in some drivers, which return larger numbers
-		// use int variable to avoid compiler problems with template
-		int mincount=core::min_((int)count,8);
-		for (int i=0; i<mincount; ++i)
+		count=core::min_(count,8);
+		for (GLint i=0; i<count; ++i)
 			Driver->extGlDeleteShader(shaders[i]);
 		Driver->extGlDeleteProgram(Program2);
 		Program2 = 0;
@@ -192,8 +179,6 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 bool COpenGLSLMaterialRenderer::OnRender(IMaterialRendererServices* service,
 					E_VERTEX_TYPE vtxtype)
 {
-    Driver->setTextureRenderStates(Driver->getCurrentMaterial(), false);
-
 	// call callback to set shader constants
 	if (CallBack && (Program||Program2))
 		CallBack->OnSetConstants(this, UserData);
@@ -207,13 +192,6 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
 {
-	if (Driver->getFixedPipelineState() == COpenGLDriver::EOFPS_ENABLE)
-		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_ENABLE_TO_DISABLE);
-	else
-		Driver->setFixedPipelineState(COpenGLDriver::EOFPS_DISABLE);
-
-	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (Program2)
@@ -222,11 +200,16 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 			Driver->extGlUseProgramObject(Program);
 
 		if (BaseMaterial)
-			BaseMaterial->OnSetBaseMaterial(material);
+			BaseMaterial->OnSetMaterial(material, material, true, this);
 	}
 
+	//let callback know used material
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
+
+	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		Driver->setActiveTexture(i, material.getTexture(i));
+	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 
@@ -238,7 +221,7 @@ void COpenGLSLMaterialRenderer::OnUnsetMaterial()
 		Driver->extGlUseProgram(0);
 
 	if (BaseMaterial)
-		BaseMaterial->OnUnsetBaseMaterial();
+		BaseMaterial->OnUnsetMaterial();
 }
 
 
@@ -407,7 +390,6 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			GLint size;
 			Driver->extGlGetActiveUniform(Program2, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLchar*>(buf));
 			ui.name = buf;
-			ui.location = Driver->extGlGetUniformLocation(Program2, buf);
 
 			UniformInfo.push_back(ui);
 		}
@@ -484,7 +466,6 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 			GLint size;
 			Driver->extGlGetActiveUniformARB(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLcharARB*>(buf));
 			ui.name = buf;
-			ui.location = Driver->extGlGetUniformLocationARB(Program, buf);
 
 			UniformInfo.push_back(ui);
 		}
@@ -504,20 +485,20 @@ void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
-s32 COpenGLSLMaterialRenderer::getVertexShaderConstantID(const c8* name)
+
+bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const f32* floats, int count)
 {
-	return getPixelShaderConstantID(name);
+	return setPixelShaderConstant(name, floats, count);
 }
 
-s32 COpenGLSLMaterialRenderer::getPixelShaderConstantID(const c8* name)
+bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const bool* bools, int count)
 {
-	for (u32 i = 0; i < UniformInfo.size(); ++i)
-	{
-		if (UniformInfo[i].name == name)
-			return i;
-	}
+	return setPixelShaderConstant(name, bools, count);
+}
 
-	return -1;
+bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+{
+	return setPixelShaderConstant(name, ints, count);
 }
 
 void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
@@ -525,51 +506,51 @@ void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 sta
 	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
-void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
+bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
-	os::Printer::log("Cannot set constant, use high level shader call.", ELL_WARNING);
-}
+	u32 i;
+	const u32 num = UniformInfo.size();
 
-bool COpenGLSLMaterialRenderer::setVertexShaderConstant(s32 index, const f32* floats, int count)
-{
-	return setPixelShaderConstant(index, floats, count);
-}
+	for (i=0; i < num; ++i)
+	{
+		if (UniformInfo[i].name == name)
+			break;
+	}
 
-bool COpenGLSLMaterialRenderer::setVertexShaderConstant(s32 index, const s32* ints, int count)
-{
-	return setPixelShaderConstant(index, ints, count);
-}
-
-bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const f32* floats, int count)
-{
-#ifdef GL_ARB_shader_objects
-	if(index < 0 || UniformInfo[index].location < 0)
+	if (i == num)
 		return false;
+
+#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
+	GLint Location=0;
+	if (Program2)
+		Location=Driver->extGlGetUniformLocation(Program2,name);
+	else
+		Location=Driver->extGlGetUniformLocationARB(Program,name);
 
 	bool status = true;
 
-	switch (UniformInfo[index].type)
+	switch (UniformInfo[i].type)
 	{
 		case GL_FLOAT:
-			Driver->extGlUniform1fv(UniformInfo[index].location, count, floats);
+			Driver->extGlUniform1fv(Location, count, floats);
 			break;
 		case GL_FLOAT_VEC2:
-			Driver->extGlUniform2fv(UniformInfo[index].location, count/2, floats);
+			Driver->extGlUniform2fv(Location, count/2, floats);
 			break;
 		case GL_FLOAT_VEC3:
-			Driver->extGlUniform3fv(UniformInfo[index].location, count/3, floats);
+			Driver->extGlUniform3fv(Location, count/3, floats);
 			break;
 		case GL_FLOAT_VEC4:
-			Driver->extGlUniform4fv(UniformInfo[index].location, count/4, floats);
+			Driver->extGlUniform4fv(Location, count/4, floats);
 			break;
 		case GL_FLOAT_MAT2:
-			Driver->extGlUniformMatrix2fv(UniformInfo[index].location, count/4, false, floats);
+			Driver->extGlUniformMatrix2fv(Location, count/4, false, floats);
 			break;
 		case GL_FLOAT_MAT3:
-			Driver->extGlUniformMatrix3fv(UniformInfo[index].location, count/9, false, floats);
+			Driver->extGlUniformMatrix3fv(Location, count/9, false, floats);
 			break;
 		case GL_FLOAT_MAT4:
-			Driver->extGlUniformMatrix4fv(UniformInfo[index].location, count/16, false, floats);
+			Driver->extGlUniformMatrix4fv(Location, count/16, false, floats);
 			break;
 		case GL_SAMPLER_1D:
 		case GL_SAMPLER_2D:
@@ -578,13 +559,8 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const f32* flo
 		case GL_SAMPLER_1D_SHADOW:
 		case GL_SAMPLER_2D_SHADOW:
 			{
-				if(floats)
-				{
-					const GLint id = static_cast<const GLint>(*floats);
-					Driver->extGlUniform1iv(UniformInfo[index].location, 1, &id);
-				}
-				else
-					status = false;
+				const GLint id = static_cast<GLint>(*floats);
+				Driver->extGlUniform1iv(Location, 1, &id);
 			}
 			break;
 		default:
@@ -597,39 +573,42 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const f32* flo
 #endif
 }
 
-bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const s32* ints, int count)
+bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const bool* bools, int count)
 {
-#ifdef GL_ARB_shader_objects
-	if(index < 0 || UniformInfo[index].location < 0)
+	u32 i;
+	const u32 num = UniformInfo.size();
+
+	for (i=0; i < num; ++i)
+	{
+		if (UniformInfo[i].name == name)
+			break;
+	}
+
+	if (i == num)
 		return false;
+
+#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
+	GLint Location=0;
+	if (Program2)
+		Location=Driver->extGlGetUniformLocation(Program2,name);
+	else
+		Location=Driver->extGlGetUniformLocationARB(Program,name);
 
 	bool status = true;
 
-	switch (UniformInfo[index].type)
+	switch (UniformInfo[i].type)
 	{
-		case GL_INT:
 		case GL_BOOL:
-			Driver->extGlUniform1iv(UniformInfo[index].location, count, reinterpret_cast<const GLint*>(ints));
+			Driver->extGlUniform1iv(Location, count, (GLint*)bools);
 			break;
-		case GL_INT_VEC2:
 		case GL_BOOL_VEC2:
-			Driver->extGlUniform2iv(UniformInfo[index].location, count/2, reinterpret_cast<const GLint*>(ints));
+			Driver->extGlUniform2iv(Location, count/2, (GLint*)bools);
 			break;
-		case GL_INT_VEC3:
 		case GL_BOOL_VEC3:
-			Driver->extGlUniform3iv(UniformInfo[index].location, count/3, reinterpret_cast<const GLint*>(ints));
+			Driver->extGlUniform3iv(Location, count/3, (GLint*)bools);
 			break;
-		case GL_INT_VEC4:
 		case GL_BOOL_VEC4:
-			Driver->extGlUniform4iv(UniformInfo[index].location, count/4, reinterpret_cast<const GLint*>(ints));
-			break;
-		case GL_SAMPLER_1D:
-		case GL_SAMPLER_2D:
-		case GL_SAMPLER_3D:
-		case GL_SAMPLER_CUBE:
-		case GL_SAMPLER_1D_SHADOW:
-		case GL_SAMPLER_2D_SHADOW:
-			Driver->extGlUniform1iv(UniformInfo[index].location, 1, reinterpret_cast<const GLint*>(ints));
+			Driver->extGlUniform4iv(Location, count/4, (GLint*)bools);
 			break;
 		default:
 			status = false;
@@ -639,6 +618,66 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(s32 index, const s32* int
 #else
 	return false;
 #endif
+}
+
+bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const s32* ints, int count)
+{
+	u32 i;
+	const u32 num = UniformInfo.size();
+
+	for (i=0; i < num; ++i)
+	{
+		if (UniformInfo[i].name == name)
+			break;
+	}
+
+	if (i == num)
+		return false;
+
+#if defined(GL_VERSION_2_0)||defined(GL_ARB_shader_objects)
+	GLint Location=0;
+	if (Program2)
+		Location=Driver->extGlGetUniformLocation(Program2,name);
+	else
+		Location=Driver->extGlGetUniformLocationARB(Program,name);
+
+	bool status = true;
+
+	switch (UniformInfo[i].type)
+	{
+		case GL_INT:
+			Driver->extGlUniform1iv(Location, count, ints);
+			break;
+		case GL_INT_VEC2:
+			Driver->extGlUniform2iv(Location, count/2, ints);
+			break;
+		case GL_INT_VEC3:
+			Driver->extGlUniform3iv(Location, count/3, ints);
+			break;
+		case GL_INT_VEC4:
+			Driver->extGlUniform4iv(Location, count/4, ints);
+			break;
+		case GL_SAMPLER_1D:
+		case GL_SAMPLER_2D:
+		case GL_SAMPLER_3D:
+		case GL_SAMPLER_CUBE:
+		case GL_SAMPLER_1D_SHADOW:
+		case GL_SAMPLER_2D_SHADOW:
+			Driver->extGlUniform1iv(Location, 1, ints);
+			break;
+		default:
+			status = false;
+			break;
+	}
+	return status;
+#else
+	return false;
+#endif
+}
+
+void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
+{
+	os::Printer::log("Cannot set constant, use high level shader call.", ELL_WARNING);
 }
 
 IVideoDriver* COpenGLSLMaterialRenderer::getVideoDriver()

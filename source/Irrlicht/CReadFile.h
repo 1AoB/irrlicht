@@ -27,28 +27,25 @@ namespace io
 		virtual ~CReadFile();
 
 		//! returns how much was read
-		virtual s32 read(void* buffer, u32 sizeToRead) _IRR_OVERRIDE_;
+		virtual s32 read(void* buffer, u32 sizeToRead);
 
 		//! changes position in file, returns true if successful
-		virtual bool seek(long finalPos, bool relativeMovement = false) _IRR_OVERRIDE_;
+		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
-		virtual long getSize() const _IRR_OVERRIDE_;
+		virtual long getSize() const;
 
 		//! returns if file is open
-		bool isOpen() const
+		virtual bool isOpen() const
 		{
 			return File != 0;
 		}
 
 		//! returns where in the file we are.
-		virtual long getPos() const _IRR_OVERRIDE_;
+		virtual long getPos() const;
 
 		//! returns name of file
-		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
-
-		//! create read file on disk.
-		static IReadFile* createReadFile(const io::path& fileName);
+		virtual const io::path& getFileName() const;
 
 	private:
 

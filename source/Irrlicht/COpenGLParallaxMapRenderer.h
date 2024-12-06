@@ -23,22 +23,22 @@ public:
 
 	//! Constructor
 	COpenGLParallaxMapRenderer(video::COpenGLDriver* driver,
-		s32& outMaterialTypeNr, E_MATERIAL_TYPE baseMaterial);
+		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial);
 
 	//! Destructor
 	~COpenGLParallaxMapRenderer();
 
 	//! Called by the engine when the vertex and/or pixel shader constants for an
 	//! material renderer should be set.
-	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData) _IRR_OVERRIDE_;
+	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData);
 
 	//! Returns the render capability of the material.
-	virtual s32 getRenderCapability() const _IRR_OVERRIDE_;
+	virtual s32 getRenderCapability() const;
 
-	virtual void OnSetMaterial(const SMaterial& material) _IRR_OVERRIDE_ { }
+	virtual void OnSetMaterial(const SMaterial& material) { }
 	virtual void OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
-		bool resetAllRenderstates, video::IMaterialRendererServices* services) _IRR_OVERRIDE_;
+		bool resetAllRenderstates, video::IMaterialRendererServices* services);
 
 protected:
 

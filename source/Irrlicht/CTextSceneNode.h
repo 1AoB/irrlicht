@@ -17,6 +17,7 @@ namespace irr
 namespace scene
 {
 
+
 	class CTextSceneNode : public ITextSceneNode
 	{
 	public:
@@ -30,22 +31,22 @@ namespace scene
 		//! destructor
 		virtual ~CTextSceneNode();
 
-		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
+		virtual void OnRegisterSceneNode();
 
 		//! renders the node.
-		virtual void render() _IRR_OVERRIDE_;
+		virtual void render();
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		//! sets the text string
-		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
+		virtual void setText(const wchar_t* text);
 
 		//! sets the color of the text
-		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
+		virtual void setTextColor(video::SColor color);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
+		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
 
 	private:
 
@@ -69,57 +70,57 @@ namespace scene
 		virtual ~CBillboardTextSceneNode();
 
 		//! sets the vertex positions etc
-		virtual void OnAnimate(u32 timeMs) _IRR_OVERRIDE_;
+		virtual void OnAnimate(u32 timeMs);
 
 		//! registers the node into the transparent pass
-		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
+		virtual void OnRegisterSceneNode();
 
 		//! renders the node.
-		virtual void render() _IRR_OVERRIDE_;
+		virtual void render();
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		//! sets the text string
-		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
+		virtual void setText(const wchar_t* text);
 
 		//! sets the color of the text
-		virtual void setTextColor(video::SColor color) _IRR_OVERRIDE_;
+		virtual void setTextColor(video::SColor color);
 
 		//! sets the size of the billboard
-		virtual void setSize(const core::dimension2d<f32>& size) _IRR_OVERRIDE_;
+		virtual void setSize(const core::dimension2d<f32>& size);
 
 		//! gets the size of the billboard
-		virtual const core::dimension2d<f32>& getSize() const _IRR_OVERRIDE_;
+		virtual const core::dimension2d<f32>& getSize() const;
 
-		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
+		virtual video::SMaterial& getMaterial(u32 i);
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
+		virtual u32 getMaterialCount() const;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_TEXT; }
+		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
 
 		//! Set the color of all vertices of the billboard
 		//! \param overallColor: the color to set
-		virtual void setColor(const video::SColor & overallColor) _IRR_OVERRIDE_;
+		virtual void setColor(const video::SColor & overallColor);
 
 		//! Set the color of the top and bottom vertices of the billboard
 		//! \param topColor: the color to set the top vertices
 		//! \param bottomColor: the color to set the bottom vertices
-		virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor) _IRR_OVERRIDE_;
+		virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor);
 
 		//! Gets the color of the top and bottom vertices of the billboard
 		//! \param topColor: stores the color of the top vertices
 		//! \param bottomColor: stores the color of the bottom vertices
-		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const _IRR_OVERRIDE_;
+		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const;
 
-		virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth) _IRR_OVERRIDE_
+		virtual void setSize(f32 height, f32 bottomEdgeWidth, f32 topEdgeWidth)
 		{
 			setSize(core::dimension2df(bottomEdgeWidth, height));
 		}
 
-		virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const _IRR_OVERRIDE_
+		virtual void getSize(f32& height, f32& bottomEdgeWidth, f32& topEdgeWidth) const
 		{
 			height = Size.Height;
 			bottomEdgeWidth = Size.Width;

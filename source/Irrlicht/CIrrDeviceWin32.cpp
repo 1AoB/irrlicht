@@ -6,6 +6,10 @@
 
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
+#if defined (__STRICT_ANSI__)
+    #error Compiling with __STRICT_ANSI__ not supported. g++ does set this when compiling with -std=c++11 or -std=c++0x. Use instead -std=gnu++11 or -std=gnu++0x. Or use -U__STRICT_ANSI__ to disable strict ansi.
+#endif
+
 #include "CIrrDeviceWin32.h"
 #include "IEventReceiver.h"
 #include "irrList.h"
@@ -17,7 +21,6 @@
 #include "dimension2d.h"
 #include "IGUISpriteBank.h"
 #include <winuser.h>
-#include "SExposedVideoData.h"
 #if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 #define DIRECTINPUT_VERSION 0x0800
@@ -31,12 +34,6 @@
 #pragma comment(lib, "winmm.lib")
 #endif
 #endif
-#endif
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-#include "CEGLManager.h"
-#endif
-#if defined(_IRR_WINDOWS_API_)
-#include "CWGLManager.h"
 #endif
 
 namespace irr
@@ -55,28 +52,8 @@ namespace irr
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-			io::IFileSystem* io, IContextManager* contextManager);
+			io::IFileSystem* io, CIrrDeviceWin32* device);
 		#endif
-        
-        #ifdef _IRR_COMPILE_WITH_OGLES1_ 	 
-        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
-#endif
-		); 	 
-        #endif 	 
-        
-        #ifdef _IRR_COMPILE_WITH_OGLES2_ 	 
-        IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
-#endif
-		); 	 
-        #endif
 	}
 } // end namespace irr
 
@@ -389,6 +366,9 @@ void pollJoysticks()
 bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	joystickInfo.clear();
+	ActiveJoysticks.clear();
+
 #ifdef _IRR_COMPILE_WITH_DIRECTINPUT_JOYSTICK_
 	if (!DirectInputDevice || (DirectInputDevice->EnumDevices(DI8DEVCLASS_GAMECTRL, SJoystickWin32Control::EnumJoysticks, this, DIEDFL_ATTACHEDONLY )))
 	{
@@ -409,9 +389,6 @@ bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 	}
 	return true;
 #else
-	joystickInfo.clear();
-	ActiveJoysticks.clear();
-
 	const u32 numberOfJoysticks = ::joyGetNumDevs();
 	JOYINFOEX info;
 	info.dwSize = sizeof(info);
@@ -937,8 +914,8 @@ namespace irr
 
 //! constructor
 CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
-: CIrrDeviceStub(params), ChangedToFullScreen(false), Resized(false),
-	ExternalWindow(false), Win32CursorControl(0), JoyControl(0), HWnd(0)
+: CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false), Resized(false),
+	ExternalWindow(false), Win32CursorControl(0), JoyControl(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
@@ -1003,12 +980,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		const s32 realWidth = clientSize.right - clientSize.left;
 		const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		s32 windowLeft = (CreationParams.WindowPosition.X == -1 ?
-		                     (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2 :
-		                     CreationParams.WindowPosition.X);
-		s32 windowTop = (CreationParams.WindowPosition.Y == -1 ?
-		                     (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2 :
-		                     CreationParams.WindowPosition.Y);
+		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 		if ( windowLeft < 0 )
 			windowLeft = 0;
@@ -1022,13 +995,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		}
 
 		// create window
+
 		HWnd = CreateWindow( ClassName, __TEXT(""), style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
-		if (!HWnd)
-		{
-			os::Printer::log("Window could not be created.", ELL_ERROR);
-		}
-			
 		CreationParams.WindowId = HWnd;
 //		CreationParams.WindowSize.Width = realWidth;
 //		CreationParams.WindowSize.Height = realHeight;
@@ -1150,56 +1119,17 @@ void CIrrDeviceWin32::createDriver()
 		break;
 
 	case video::EDT_OPENGL:
-		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		{
-			switchToFullScreen();
 
-			ContextManager = new video::CWGLManager();
-			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
-			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
-			if (!VideoDriver)
-			{
-				os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
-			}
+		#ifdef _IRR_COMPILE_WITH_OPENGL_
+		switchToFullScreen();
+
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
+		if (!VideoDriver)
+		{
+			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
 		}
 		#else
 		os::Printer::log("OpenGL driver was not compiled in.", ELL_ERROR);
-		#endif
-		break;
-
-	case video::EDT_OGLES1:
-		#ifdef _IRR_COMPILE_WITH_OGLES1_
-		{
-			switchToFullScreen();
-			ContextManager = new video::CEGLManager();
-			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
-
-			VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
-			if (!VideoDriver)
-			{
-				os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR);
-			}
-		}
-		#else
-		os::Printer::log("OpenGL-ES1 driver was not compiled in.", ELL_ERROR);
-		#endif
-		break;
-
-	case video::EDT_OGLES2:
-		#ifdef _IRR_COMPILE_WITH_OGLES2_
-		{ 	 
-			switchToFullScreen();
-			ContextManager = new video::CEGLManager();
-			ContextManager->initialize(CreationParams, video::SExposedVideoData(HWnd));
-
-			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
-			if (!VideoDriver)
-			{
-				os::Printer::log("Could not create OpenGL-ES2 driver.", ELL_ERROR);
-			}
-		}
-		#else
-		os::Printer::log("OpenGL-ES2 driver was not compiled in.", ELL_ERROR);
 		#endif
 		break;
 
@@ -1809,22 +1739,6 @@ void CIrrDeviceWin32::restoreWindow()
 	SetWindowPlacement(HWnd, &wndpl);
 }
 
-core::position2di CIrrDeviceWin32::getWindowPosition()
-{
-	WINDOWPLACEMENT wndpl;
-	wndpl.length = sizeof(WINDOWPLACEMENT);
-	if (GetWindowPlacement(HWnd, &wndpl))
-	{
-		return core::position2di((int)wndpl.rcNormalPosition.left,
-		                         (int)wndpl.rcNormalPosition.top);
-	}
-	else
-	{
-		// No reason for this to happen
-		os::Printer::log("Failed to retrieve window location", ELL_ERROR);
-		return core::position2di(-1, -1);
-	}
-}
 
 bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
@@ -1861,7 +1775,7 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 	r = GetDeviceGammaRamp ( dc, ramp ) == TRUE;
 	ReleaseDC(HWnd, dc);
 
-	if (r)
+	if ( r )
 	{
 		calculateGammaFromRamp(red, ramp[0]);
 		calculateGammaFromRamp(green, ramp[1]);
@@ -1872,6 +1786,7 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 	contrast = 0.f;
 
 	return r;
+
 }
 
 
@@ -1886,7 +1801,7 @@ void CIrrDeviceWin32::handleSystemMessages()
 		// deadkey handling.
 
 		if (ExternalWindow && msg.hwnd == HWnd)
-			WndProc(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+			WndProc(HWnd, msg.message, msg.wParam, msg.lParam);
 		else
 			DispatchMessage(&msg);
 
@@ -1941,6 +1856,26 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 			MessageBox(NULL, __TEXT("Unknown error"), pszCaption, MB_OK|MB_ICONERROR);
 		}
 	}
+}
+
+// Same function Windows offers in VersionHelpers.h, but we can't use that as it's not available in older sdk's (minimum is SDK 8.1)
+bool CIrrDeviceWin32::isWindowsVistaOrGreater()
+{
+#if (_WIN32_WINNT >= 0x0500)
+	OSVERSIONINFOEX osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	osvi.dwMajorVersion = 6; //  Windows Vista
+
+	if ( !GetVersionEx((OSVERSIONINFO*)&osvi) )
+	{
+		return false;
+	}
+
+	return VerifyVersionInfo(&osvi, VER_MAJORVERSION, VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL));
+#else
+    return false;
+#endif
 }
 
 // Convert an Irrlicht texture to a Windows cursor

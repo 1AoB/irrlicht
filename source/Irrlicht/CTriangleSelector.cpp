@@ -78,9 +78,28 @@ void CTriangleSelector::createFromMesh(const IMesh* mesh)
 	for (u32 j=0; j<cnt; ++j)
 		totalFaceCount += mesh->getMeshBuffer(j)->getIndexCount();
 	totalFaceCount /= 3;
-	Triangles.set_used(totalFaceCount);
+	Triangles.reallocate(totalFaceCount);
+	BoundingBox.reset(0.f, 0.f, 0.f);
 
-	updateFromMesh(mesh);
+	for (u32 i=0; i<cnt; ++i)
+	{
+		const IMeshBuffer* buf = mesh->getMeshBuffer(i);
+
+		const u32 idxCnt = buf->getIndexCount();
+		const u16* const indices = buf->getIndices();
+
+		for (u32 j=0; j<idxCnt; j+=3)
+		{
+			Triangles.push_back(core::triangle3df(
+					buf->getPosition(indices[j+0]),
+					buf->getPosition(indices[j+1]),
+					buf->getPosition(indices[j+2])));
+			const core::triangle3df& tri = Triangles.getLast();
+			BoundingBox.addInternalPoint(tri.pointA);
+			BoundingBox.addInternalPoint(tri.pointB);
+			BoundingBox.addInternalPoint(tri.pointC);
+		}
+	}
 }
 
 
@@ -197,7 +216,7 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 	const u32 cnt = Triangles.size();
 	for (u32 i=0; i<cnt; ++i)
 	{
-		// This isn't an accurate test, but it's fast, and the
+		// This isn't an accurate test, but it's fast, and the 
 		// API contract doesn't guarantee complete accuracy.
 		if (Triangles[i].isTotalOutsideBox(tBox))
 		   continue;

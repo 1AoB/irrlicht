@@ -32,62 +32,55 @@ namespace gui
 		/** \param enable: If set to true, the override color, which can be set
 		with IGUIEditBox::setOverrideColor is used, otherwise the
 		EGDC_BUTTON_TEXT color of the skin. */
-		virtual IGUIEditBox* getEditBox() const _IRR_OVERRIDE_;
+		virtual IGUIEditBox* getEditBox() const;
 
 		//! set the current value of the spinbox
 		/** \param val: value to be set in the spinbox */
-		virtual void setValue(f32 val) _IRR_OVERRIDE_;
+		virtual void setValue(f32 val);
 
 		//! Get the current value of the spinbox
-		virtual f32 getValue() const _IRR_OVERRIDE_;
+		virtual f32 getValue() const;
 
 		//! set the range of values which can be used in the spinbox
 		/** \param min: minimum value
 		\param max: maximum value */
-		virtual void setRange(f32 min, f32 max) _IRR_OVERRIDE_;
+		virtual void setRange(f32 min, f32 max);
 
 		//! get the minimum value which can be used in the spinbox
-		virtual f32 getMin() const _IRR_OVERRIDE_;
+		virtual f32 getMin() const;
 
 		//! get the maximum value which can be used in the spinbox
-		virtual f32 getMax() const _IRR_OVERRIDE_;
+		virtual f32 getMax() const;
 
 		//! step size by which values are changed when pressing the spin buttons
 		/** \param step: stepsize used for value changes when pressing spin buttons */
-		virtual void setStepSize(f32 step=1.f) _IRR_OVERRIDE_;
+		virtual void setStepSize(f32 step=1.f);
 
 		//! returns the step size
-		virtual f32 getStepSize() const _IRR_OVERRIDE_;
+		virtual f32 getStepSize() const;
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
+		virtual bool OnEvent(const SEvent& event);
 
 		//! Draws the element and its children.
-		virtual void draw() _IRR_OVERRIDE_;
+		virtual void draw();
 
 		//! Sets the new caption of the element
-		virtual void setText(const wchar_t* text) _IRR_OVERRIDE_;
+		virtual void setText(const wchar_t* text);
 
 		//! Returns caption of this element.
-		virtual const wchar_t* getText() const _IRR_OVERRIDE_;
+		virtual const wchar_t* getText() const;
 
 		//! Sets the number of decimal places to display.
 		//! Note that this also rounds the range to the same number of decimal places.
 		/** \param places: The number of decimal places to display, use -1 to reset */
-		virtual void setDecimalPlaces(s32 places) _IRR_OVERRIDE_;
-
-		//! Sets when the spinbox has to validate entered text.
-		/** \param validateOn Can be any combination of EGUI_SPINBOX_VALIDATION bit flags */
-		virtual void setValidateOn(u32 validateOn) _IRR_OVERRIDE_;
-
-		//! Gets when the spinbox has to validate entered text.
-		virtual u32 getValidateOn() const _IRR_OVERRIDE_;
+		virtual void setDecimalPlaces(s32 places);
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 	protected:
 		virtual void verifyValueRange();
@@ -103,7 +96,6 @@ namespace gui
 
 		core::stringw FormatString;
 		s32 DecimalPlaces;
-		u32 ValidateOn;	// combination of EGUI_SPINBOX_VALIDATION bit-flags
 	};
 
 

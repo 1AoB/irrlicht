@@ -20,19 +20,19 @@ namespace scene
 		CEmptySceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id);
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		//! This method is called just before the rendering process of the whole scene.
-		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
+		virtual void OnRegisterSceneNode();
 
 		//! does nothing.
-		virtual void render() _IRR_OVERRIDE_;
+		virtual void render();
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_EMPTY; }
+		virtual ESCENE_NODE_TYPE getType() const { return ESNT_EMPTY; }
 
 		//! Creates a clone of this scene node and its children.
-		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) _IRR_OVERRIDE_;
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
 	private:
 

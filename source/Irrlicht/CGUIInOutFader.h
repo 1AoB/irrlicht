@@ -24,29 +24,29 @@ namespace gui
 			s32 id, core::rect<s32> rectangle);
 
 		//! draws the element and its children
-		virtual void draw() _IRR_OVERRIDE_;
+		virtual void draw();
 
 		//! Gets the color to fade out to or to fade in from.
-		virtual video::SColor getColor() const _IRR_OVERRIDE_;
+		virtual video::SColor getColor() const;
 
 		//! Sets the color to fade out to or to fade in from.
-		virtual void setColor(video::SColor color ) _IRR_OVERRIDE_;
-		virtual void setColor(video::SColor source, video::SColor dest) _IRR_OVERRIDE_;
+		virtual void setColor(video::SColor color );
+		virtual void setColor(video::SColor source, video::SColor dest);
 
 		//! Starts the fade in process.
-		virtual void fadeIn(u32 time) _IRR_OVERRIDE_;
+		virtual void fadeIn(u32 time);
 
 		//! Starts the fade out process.
-		virtual void fadeOut(u32 time) _IRR_OVERRIDE_;
+		virtual void fadeOut(u32 time);
 
 		//! Returns if the fade in or out process is done.
-		virtual bool isReady() const _IRR_OVERRIDE_;
+		virtual bool isReady() const;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 	private:
 

@@ -368,7 +368,7 @@ void CAnimatedMeshSceneNode::render()
 			}
 		}
 
-		debug_mat.ZBuffer = video::ECFN_DISABLED;
+		debug_mat.ZBuffer = video::ECFN_NEVER;
 		debug_mat.Lighting = false;
 		driver->setMaterial(debug_mat);
 
@@ -448,7 +448,7 @@ void CAnimatedMeshSceneNode::render()
 		{
 			debug_mat.Lighting = false;
 			debug_mat.Wireframe = true;
-			debug_mat.ZBuffer = video::ECFN_DISABLED;
+			debug_mat.ZBuffer = video::ECFN_NEVER;
 			driver->setMaterial(debug_mat);
 
 			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
@@ -645,6 +645,21 @@ u32 CAnimatedMeshSceneNode::getJointCount() const
 #endif
 }
 
+
+//! Returns a pointer to a child node, which has the same transformation as
+//! the corresponding joint, if the mesh in this scene node is a ms3d mesh.
+ISceneNode* CAnimatedMeshSceneNode::getMS3DJointNode(const c8* jointName)
+{
+	return  getJointNode(jointName);
+}
+
+
+//! Returns a pointer to a child node, which has the same transformation as
+//! the corresponding joint, if the mesh in this scene node is a .x mesh.
+ISceneNode* CAnimatedMeshSceneNode::getXJointNode(const c8* jointName)
+{
+	return  getJointNode(jointName);
+}
 
 //! Removes a child from this scene node.
 //! Implemented here, to be able to remove the shadow properly, if there is one,
@@ -1099,7 +1114,7 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	newNode->ReadOnlyMaterials = ReadOnlyMaterials;
 	newNode->LoopCallBack = LoopCallBack;
 	if (newNode->LoopCallBack)
-		newNode->LoopCallBack->grab();	
+		newNode->LoopCallBack->grab();
 	newNode->PassCount = PassCount;
 	newNode->Shadow = Shadow;
 	if (newNode->Shadow)

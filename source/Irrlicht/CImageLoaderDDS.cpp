@@ -1,6 +1,4 @@
-// Copyright (C) 2013 Patryk Nadrowski
-// Heavily based on the DDS loader implemented by Thomas Alten
-// and DDS loader from IrrSpintz implemented by Thomas Ince
+// Copyright (C) 2002-2012 Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -12,9 +10,10 @@
 	mainly c to cpp
 */
 
+
 #include "CImageLoaderDDS.h"
 
-#if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_DECODER_LOADER_)
+#ifdef _IRR_COMPILE_WITH_DDS_LOADER_
 
 #include "IReadFile.h"
 #include "os.h"
@@ -22,38 +21,6 @@
 #include "CImage.h"
 #include "irrString.h"
 
-// Header flag values
-#define DDSD_CAPS			0x00000001
-#define DDSD_HEIGHT			0x00000002
-#define DDSD_WIDTH			0x00000004
-#define DDSD_PITCH			0x00000008
-#define DDSD_PIXELFORMAT	0x00001000
-#define DDSD_MIPMAPCOUNT	0x00020000
-#define DDSD_LINEARSIZE		0x00080000
-#define DDSD_DEPTH			0x00800000
-
-// Pixel format flag values
-#define DDPF_ALPHAPIXELS	0x00000001
-#define DDPF_ALPHA			0x00000002
-#define DDPF_FOURCC			0x00000004
-#define DDPF_RGB			0x00000040
-#define DDPF_COMPRESSED		0x00000080
-#define DDPF_LUMINANCE		0x00020000
-
-// Caps1 values
-#define DDSCAPS1_COMPLEX	0x00000008
-#define DDSCAPS1_TEXTURE	0x00001000
-#define DDSCAPS1_MIPMAP		0x00400000
-
-// Caps2 values
-#define DDSCAPS2_CUBEMAP            0x00000200
-#define DDSCAPS2_CUBEMAP_POSITIVEX  0x00000400
-#define DDSCAPS2_CUBEMAP_NEGATIVEX  0x00000800
-#define DDSCAPS2_CUBEMAP_POSITIVEY  0x00001000
-#define DDSCAPS2_CUBEMAP_NEGATIVEY  0x00002000
-#define DDSCAPS2_CUBEMAP_POSITIVEZ  0x00004000
-#define DDSCAPS2_CUBEMAP_NEGATIVEZ  0x00008000
-#define DDSCAPS2_VOLUME             0x00200000
 
 namespace irr
 {
@@ -61,36 +28,21 @@ namespace irr
 namespace video
 {
 
-/*
-DDSGetInfo()
-extracts relevant info from a dds texture, returns 0 on success
-*/
-s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
+namespace
 {
-	/* dummy test */
-	if( dds == NULL )
-		return -1;
 
-	/* test dds header */
-	if( *((s32*) dds->Magic) != *((s32*) "DDS ") )
-		return -1;
-	if( DDSLittleLong( dds->Size ) != 124 )
-		return -1;
-	if( !(DDSLittleLong( dds->Flags ) & DDSD_PIXELFORMAT) )
-		return -1;
-	if( !(DDSLittleLong( dds->Flags ) & DDSD_CAPS) )
-		return -1;
-
-	/* extract width and height */
-	if( width != NULL )
-		*width = DDSLittleLong( dds->Width );
-	if( height != NULL )
-		*height = DDSLittleLong( dds->Height );
-
-	/* get pixel format */
+/*!
+	DDSDecodePixelFormat()
+	determines which pixel format the dds texture is in
+*/
+void DDSDecodePixelFormat( ddsBuffer *dds, eDDSPixelFormat *pf )
+{
+	/* dummy check */
+	if(	dds == NULL || pf == NULL )
+		return;
 
 	/* extract fourCC */
-	const u32 fourCC = dds->PixelFormat.FourCC;
+	const u32 fourCC = dds->pixelFormat.fourCC;
 
 	/* test it */
 	if( fourCC == 0 )
@@ -107,36 +59,33 @@ s32 DDSGetInfo(ddsHeader* dds, s32* width, s32* height, eDDSPixelFormat* pf)
 		*pf = DDS_PF_DXT5;
 	else
 		*pf = DDS_PF_UNKNOWN;
-
-	/* return ok */
-	return 0;
 }
 
 
-#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-
-/*
-DDSDecompressARGB8888()
-decompresses an argb 8888 format texture
+/*!
+DDSGetInfo()
+extracts relevant info from a dds texture, returns 0 on success
 */
-s32 DDSDecompressARGB8888(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixels)
+s32 DDSGetInfo( ddsBuffer *dds, s32 *width, s32 *height, eDDSPixelFormat *pf )
 {
-	/* setup */
-	u8* in = data;
-	u8* out = pixels;
+	/* dummy test */
+	if( dds == NULL )
+		return -1;
 
-	/* walk y */
-	for(s32 y = 0; y < height; y++)
-	{
-		/* walk x */
-		for(s32 x = 0; x < width; x++)
-		{
-			*out++ = *in++;
-			*out++ = *in++;
-			*out++ = *in++;
-			*out++ = *in++;
-		}
-	}
+	/* test dds header */
+	if( *((s32*) dds->magic) != *((s32*) "DDS ") )
+		return -1;
+	if( DDSLittleLong( dds->size ) != 124 )
+		return -1;
+
+	/* extract width and height */
+	if( width != NULL )
+		*width = DDSLittleLong( dds->width );
+	if( height != NULL )
+		*height = DDSLittleLong( dds->height );
+
+	/* get pixel format */
+	DDSDecodePixelFormat( dds, pf );
 
 	/* return ok */
 	return 0;
@@ -147,7 +96,7 @@ s32 DDSDecompressARGB8888(ddsHeader* dds, u8* data, s32 width, s32 height, u8* p
 	DDSGetColorBlockColors()
 	extracts colors from a dds color block
 */
-void DDSGetColorBlockColors(ddsColorBlock* block, ddsColor colors[4])
+void DDSGetColorBlockColors( ddsColorBlock *block, ddsColor colors[ 4 ] )
 {
 	u16		word;
 
@@ -243,7 +192,7 @@ decodes a dds color block
 fixme: make endian-safe
 */
 
-void DDSDecodeColorBlock(u32* pixel, ddsColorBlock* block, s32 width, u32 colors[4])
+void DDSDecodeColorBlock( u32 *pixel, ddsColorBlock *block, s32 width, u32 colors[ 4 ] )
 {
 	s32				r, n;
 	u32	bits;
@@ -298,7 +247,7 @@ void DDSDecodeColorBlock(u32* pixel, ddsColorBlock* block, s32 width, u32 colors
 DDSDecodeAlphaExplicit()
 decodes a dds explicit alpha block
 */
-void DDSDecodeAlphaExplicit(u32* pixel, ddsAlphaBlockExplicit* alphaBlock, s32 width, u32 alphaZero)
+void DDSDecodeAlphaExplicit( u32 *pixel, ddsAlphaBlockExplicit *alphaBlock, s32 width, u32 alphaZero )
 {
 	s32				row, pix;
 	u16	word;
@@ -335,7 +284,7 @@ void DDSDecodeAlphaExplicit(u32* pixel, ddsAlphaBlockExplicit* alphaBlock, s32 w
 DDSDecodeAlpha3BitLinear()
 decodes interpolated alpha block
 */
-void DDSDecodeAlpha3BitLinear(u32* pixel, ddsAlphaBlock3BitLinear* alphaBlock, s32 width, u32 alphaZero)
+void DDSDecodeAlpha3BitLinear( u32 *pixel, ddsAlphaBlock3BitLinear *alphaBlock, s32 width, u32 alphaZero )
 {
 
 	s32 row, pix;
@@ -444,7 +393,7 @@ void DDSDecodeAlpha3BitLinear(u32* pixel, ddsAlphaBlock3BitLinear* alphaBlock, s
 DDSDecompressDXT1()
 decompresses a dxt1 format texture
 */
-s32 DDSDecompressDXT1(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixels)
+s32 DDSDecompressDXT1( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
 	s32 x, y, xBlocks, yBlocks;
 	u32 *pixel;
@@ -459,7 +408,7 @@ s32 DDSDecompressDXT1(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 	for( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block */
-		block = (ddsColorBlock*) (data + y * xBlocks * 8);
+		block = (ddsColorBlock*) (dds->data + y * xBlocks * 8);
 
 		/* walk x */
 		for( x = 0; x < xBlocks; x++, block++ )
@@ -480,7 +429,7 @@ DDSDecompressDXT3()
 decompresses a dxt3 format texture
 */
 
-s32 DDSDecompressDXT3(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixels)
+s32 DDSDecompressDXT3( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
 	s32 x, y, xBlocks, yBlocks;
 	u32 *pixel, alphaZero;
@@ -503,7 +452,7 @@ s32 DDSDecompressDXT3(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 	for( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = (ddsColorBlock*) (data + y * xBlocks * 16);
+		block = (ddsColorBlock*) (dds->data + y * xBlocks * 16);
 
 		/* walk x */
 		for( x = 0; x < xBlocks; x++, block++ )
@@ -533,7 +482,7 @@ s32 DDSDecompressDXT3(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 DDSDecompressDXT5()
 decompresses a dxt5 format texture
 */
-s32 DDSDecompressDXT5(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixels)
+s32 DDSDecompressDXT5( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
 	s32 x, y, xBlocks, yBlocks;
 	u32 *pixel, alphaZero;
@@ -556,7 +505,7 @@ s32 DDSDecompressDXT5(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 	for( y = 0; y < yBlocks; y++ )
 	{
 		/* 8 bytes per block, 1 block for alpha, 1 block for color */
-		block = (ddsColorBlock*) (data + y * xBlocks * 16);
+		block = (ddsColorBlock*) (dds->data + y * xBlocks * 16);
 
 		/* walk x */
 		for( x = 0; x < xBlocks; x++, block++ )
@@ -586,10 +535,10 @@ s32 DDSDecompressDXT5(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 DDSDecompressDXT2()
 decompresses a dxt2 format texture (fixme: un-premultiply alpha)
 */
-s32 DDSDecompressDXT2(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixels)
+s32 DDSDecompressDXT2( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
 	/* decompress dxt3 first */
-	const s32 r = DDSDecompressDXT3( dds, data, width, height, pixels );
+	const s32 r = DDSDecompressDXT3( dds, width, height, pixels );
 
 	/* return to sender */
 	return r;
@@ -600,10 +549,10 @@ s32 DDSDecompressDXT2(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 DDSDecompressDXT4()
 decompresses a dxt4 format texture (fixme: un-premultiply alpha)
 */
-s32 DDSDecompressDXT4(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixels)
+s32 DDSDecompressDXT4( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
 {
 	/* decompress dxt5 first */
-	const s32 r = DDSDecompressDXT5( dds, data, width, height, pixels );
+	const s32 r = DDSDecompressDXT5( dds, width, height, pixels );
 
 	/* return to sender */
 	return r;
@@ -611,10 +560,38 @@ s32 DDSDecompressDXT4(ddsHeader* dds, u8* data, s32 width, s32 height, u8* pixel
 
 
 /*
+DDSDecompressARGB8888()
+decompresses an argb 8888 format texture
+*/
+s32 DDSDecompressARGB8888( ddsBuffer *dds, s32 width, s32 height, u8 *pixels )
+{
+	/* setup */
+	u8* in = dds->data;
+	u8* out = pixels;
+
+	/* walk y */
+	for(s32 y = 0; y < height; y++)
+	{
+		/* walk x */
+		for(s32 x = 0; x < width; x++)
+		{
+			*out++ = *in++;
+			*out++ = *in++;
+			*out++ = *in++;
+			*out++ = *in++;
+		}
+	}
+
+	/* return ok */
+	return 0;
+}
+
+
+/*
 DDSDecompress()
 decompresses a dds texture into an rgba image buffer, returns 0 on success
 */
-s32 DDSDecompress(ddsHeader* dds, u8* data, u8* pixels)
+s32 DDSDecompress( ddsBuffer *dds, u8 *pixels )
 {
 	s32 width, height;
 	eDDSPixelFormat pf;
@@ -629,30 +606,32 @@ s32 DDSDecompress(ddsHeader* dds, u8* data, u8* pixels)
 	{
 	case DDS_PF_ARGB8888:
 		/* fixme: support other [a]rgb formats */
-		r = DDSDecompressARGB8888( dds, data, width, height, pixels );
+		r = DDSDecompressARGB8888( dds, width, height, pixels );
 		break;
 
 	case DDS_PF_DXT1:
-		r = DDSDecompressDXT1( dds, data, width, height, pixels );
+		r = DDSDecompressDXT1( dds, width, height, pixels );
 		break;
 
 	case DDS_PF_DXT2:
-		r = DDSDecompressDXT2( dds, data, width, height, pixels );
+		r = DDSDecompressDXT2( dds, width, height, pixels );
 		break;
 
 	case DDS_PF_DXT3:
-		r = DDSDecompressDXT3( dds, data, width, height, pixels );
+		r = DDSDecompressDXT3( dds, width, height, pixels );
 		break;
 
 	case DDS_PF_DXT4:
-		r = DDSDecompressDXT4( dds, data, width, height, pixels );
+		r = DDSDecompressDXT4( dds, width, height, pixels );
 		break;
 
 	case DDS_PF_DXT5:
-		r = DDSDecompressDXT5( dds, data, width, height, pixels );
+		r = DDSDecompressDXT5( dds, width, height, pixels );
 		break;
 
-	default: // DDS_PF_UNKNOWN
+	default:
+	case DDS_PF_UNKNOWN:
+		memset( pixels, 0xFF, width * height * 4 );
 		r = -1;
 		break;
 	}
@@ -661,14 +640,14 @@ s32 DDSDecompress(ddsHeader* dds, u8* data, u8* pixels)
 	return r;
 }
 
-#endif
+} // end anonymous namespace
 
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
 bool CImageLoaderDDS::isALoadableFileExtension(const io::path& filename) const
 {
-	return core::hasFileExtension(filename, "dds");
+	return core::hasFileExtension ( filename, "dds" );
 }
 
 
@@ -678,183 +657,42 @@ bool CImageLoaderDDS::isALoadableFileFormat(io::IReadFile* file) const
 	if (!file)
 		return false;
 
-	c8 MagicWord[4];
-	file->read(&MagicWord, 4);
+	ddsBuffer header;
+	file->read(&header, sizeof(header));
 
-	return (MagicWord[0] == 'D' && MagicWord[1] == 'D' && MagicWord[2] == 'S');
+	s32 width, height;
+	eDDSPixelFormat pixelFormat;
+
+	return (0 == DDSGetInfo( &header, &width, &height, &pixelFormat));
 }
 
 
 //! creates a surface from the file
 IImage* CImageLoaderDDS::loadImage(io::IReadFile* file) const
 {
-	ddsHeader header;
+	u8 *memFile = new u8 [ file->getSize() ];
+	file->read ( memFile, file->getSize() );
+
+	ddsBuffer *header = (ddsBuffer*) memFile;
 	IImage* image = 0;
 	s32 width, height;
 	eDDSPixelFormat pixelFormat;
-	ECOLOR_FORMAT format = ECF_UNKNOWN;
-	u32 dataSize = 0;
-	bool is3D = false;
-	bool useAlpha = false;
-	u32 mipMapCount = 0;
 
-	file->seek(0);
-	file->read(&header, sizeof(ddsHeader));
-
-	if (0 == DDSGetInfo(&header, &width, &height, &pixelFormat))
+	if ( 0 == DDSGetInfo( header, &width, &height, &pixelFormat) )
 	{
-		is3D = header.Depth > 0 && (header.Flags & DDSD_DEPTH);
-
-		if (!is3D)
-			header.Depth = 1;
-
-		useAlpha = header.PixelFormat.Flags & DDPF_ALPHAPIXELS;
-
-		if (header.MipMapCount > 0 && (header.Flags & DDSD_MIPMAPCOUNT))
-			mipMapCount = header.MipMapCount;
-
-#ifdef _IRR_COMPILE_WITH_DDS_DECODER_LOADER_
-		u32 newSize = file->getSize() - sizeof(ddsHeader);
-		u8* memFile = new u8[newSize];
-		file->read(memFile, newSize);
-
 		image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(width, height));
 
-		if (DDSDecompress(&header, memFile, (u8*)image->lock()) == -1)
+		if ( DDSDecompress( header, (u8*) image->lock() ) == -1)
 		{
 			image->unlock();
 			image->drop();
 			image = 0;
 		}
-
-		delete[] memFile;
-#else
-		if (header.PixelFormat.Flags & DDPF_RGB) // Uncompressed formats
-		{
-			u32 byteCount = header.PixelFormat.RGBBitCount / 8;
-
-			if( header.Flags & DDSD_PITCH )
-				dataSize = header.PitchOrLinearSize * header.Height * header.Depth * (header.PixelFormat.RGBBitCount / 8);
-			else
-				dataSize = header.Width * header.Height * header.Depth * (header.PixelFormat.RGBBitCount / 8);
-
-			u8* data = new u8[dataSize];
-			file->read(data, dataSize);
-
-			switch (header.PixelFormat.RGBBitCount) // Bytes per pixel
-			{
-				case 16:
-				{
-					if (useAlpha)
-					{
-						if (header.PixelFormat.ABitMask == 0x8000)
-							format = ECF_A1R5G5B5;
-					}
-					else
-					{
-						if (header.PixelFormat.RBitMask == 0xf800)
-							format = ECF_R5G6B5;
-					}
-
-					break;
-				}
-				case 24:
-				{
-					if (!useAlpha)
-					{
-						if (header.PixelFormat.RBitMask == 0xff0000)
-							format = ECF_R8G8B8;
-					}
-
-					break;
-				}
-				case 32:
-				{
-					if (useAlpha)
-					{
-						if (header.PixelFormat.RBitMask & 0xff0000)
-							format = ECF_A8R8G8B8;
-						else if (header.PixelFormat.RBitMask & 0xff)
-						{
-							// convert from A8B8G8R8 to A8R8G8B8
-							u8 tmp = 0;
-
-							for (u32 i = 0; i < dataSize; i += 4)
-							{
-								tmp = data[i];
-								data[i] = data[i+2];
-								data[i+2] = tmp;
-							}
-						}
-					}
-
-					break;
-				}
-			}
-
-			if (format != ECF_UNKNOWN)
-			{
-				if (!is3D) // Currently 3D textures are unsupported.
-				{
-					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height ), data, true, true, false);
-				}
-			}
-			else
-			{
-				delete[] data;
-			}
-		}
-		else if (header.PixelFormat.Flags & DDPF_FOURCC) // Compressed formats
-		{
-			switch(pixelFormat)
-			{
-				case DDS_PF_DXT1:
-					format = ECF_DXT1;
-					break;
-				case DDS_PF_DXT2:
-				case DDS_PF_DXT3:
-					format = ECF_DXT3;
-					break;
-				case DDS_PF_DXT4:
-				case DDS_PF_DXT5:
-					format = ECF_DXT5;
-					break;
-			}
-
-			if (format != ECF_UNKNOWN)
-			{
-				// Calculate image data size.
-				u32 curWidth = header.Width;
-				u32 curHeight = header.Height;
-
-				dataSize = IImage::getCompressedImageSize(format, curWidth, curHeight);
-
-				do
-				{
-					if (curWidth > 1)
-						curWidth >>= 1;
-
-					if (curHeight > 1)
-						curHeight >>= 1;
-
-					dataSize += IImage::getCompressedImageSize(format, curWidth, curHeight);
-				}
-				while (curWidth != 1 || curWidth != 1);
-
-				// Currently 3D textures are unsupported.
-				if (!is3D)
-				{
-					u8* data = new u8[dataSize];
-					file->read(data, dataSize);
-
-					bool hasMipMap = (mipMapCount > 0) ? true : false;
-
-					image = new CImage(format, core::dimension2d<u32>(header.Width, header.Height), data, true, true, true, hasMipMap);
-				}
-			}
-		}
-#endif
 	}
+
+	delete [] memFile;
+	if ( image )
+		image->unlock();
 
 	return image;
 }

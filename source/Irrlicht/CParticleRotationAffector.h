@@ -21,25 +21,25 @@ public:
 		const core::vector3df& point = core::vector3df() );
 
 	//! Affects a particle.
-	virtual void affect(u32 now, SParticle* particlearray, u32 count) _IRR_OVERRIDE_;
+	virtual void affect(u32 now, SParticle* particlearray, u32 count);
 
 	//! Set the point that particles will attract to
-	virtual void setPivotPoint( const core::vector3df& point ) _IRR_OVERRIDE_ { PivotPoint = point; }
+	virtual void setPivotPoint( const core::vector3df& point ) { PivotPoint = point; }
 
 	//! Set the speed in degrees per second
-	virtual void setSpeed( const core::vector3df& speed ) _IRR_OVERRIDE_ { Speed = speed; }
+	virtual void setSpeed( const core::vector3df& speed ) { Speed = speed; }
 
 	//! Get the point that particles are attracted to
-	virtual const core::vector3df& getPivotPoint() const _IRR_OVERRIDE_ { return PivotPoint; }
+	virtual const core::vector3df& getPivotPoint() const { return PivotPoint; }
 
 	//! Get the speed in degrees per second
-	virtual const core::vector3df& getSpeed() const _IRR_OVERRIDE_ { return Speed; }
+	virtual const core::vector3df& getSpeed() const { return Speed; }
 
 	//! Writes attributes of the object.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 	//! Reads attributes of the object.
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 private:
 

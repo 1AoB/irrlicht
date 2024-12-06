@@ -78,9 +78,6 @@ namespace irr
 		//! Restore the window to normal size if possible.
 		virtual void restoreWindow();
 
-        //! Get the position of this window on screen
-        virtual core::position2di getWindowPosition();
-        
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
@@ -110,7 +107,7 @@ namespace irr
 		public:
 
 			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device)
-				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), Device(device), IsVisible(true), UseReferenceRect(false)
+				: WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), Device(device), UseReferenceRect(false)
 			{
 				CursorPos.X = CursorPos.Y = 0;
 				if (WindowSize.Width!=0)

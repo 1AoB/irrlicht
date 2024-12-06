@@ -607,10 +607,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\..\..\include\leakHunter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\..\..\include\IrrlichtDevice.h"
 				>
 			</File>
@@ -1476,14 +1472,6 @@
 				>
 			</File>
 			<File
-				RelativePath="CEGLManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath="CEGLManager.h"
-				>
-			</File>
-			<File
 				RelativePath="CVideoModeList.cpp"
 				>
 			</File>
@@ -1784,14 +1772,6 @@
 				</File>
 				<File
 					RelativePath="CImageLoaderPSD.h"
-					>
-				</File>
-				<File
-					RelativePath="CImageLoaderPVR.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CImageLoaderPVR.h"
 					>
 				</File>
 				<File
@@ -2999,10 +2979,6 @@
 			</File>
 			<File
 				RelativePath="os.cpp"
-				>
-			</File>
-			<File
-				RelativePath="leakHunter.cpp"
 				>
 			</File>
 			<File

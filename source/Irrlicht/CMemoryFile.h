@@ -16,66 +16,35 @@ namespace io
 {
 
 	/*!
-		Class for reading from memory.
+		Class for reading and writing from memory.
 	*/
-	class CMemoryReadFile : public IReadFile
+	class CMemoryFile : public IReadFile, public IWriteFile
 	{
 	public:
 
 		//! Constructor
-		CMemoryReadFile(const void* memory, long len, const io::path& fileName, bool deleteMemoryWhenDropped);
+		CMemoryFile(void* memory, long len, const io::path& fileName, bool deleteMemoryWhenDropped);
 
 		//! Destructor
-		virtual ~CMemoryReadFile();
+		virtual ~CMemoryFile();
 
 		//! returns how much was read
-		virtual s32 read(void* buffer, u32 sizeToRead) _IRR_OVERRIDE_;
-
-		//! changes position in file, returns true if successful
-		virtual bool seek(long finalPos, bool relativeMovement = false) _IRR_OVERRIDE_;
-
-		//! returns size of file
-		virtual long getSize() const _IRR_OVERRIDE_;
-
-		//! returns where in the file we are.
-		virtual long getPos() const _IRR_OVERRIDE_;
-
-		//! returns name of file
-		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
-
-	private:
-
-		const void *Buffer;
-		long Len;
-		long Pos;
-		io::path Filename;
-		bool deleteMemoryWhenDropped;
-	};
-
-	/*!
-		Class for writing to memory.
-	*/
-	class CMemoryWriteFile : public IWriteFile
-	{
-	public:
-
-		//! Constructor
-		CMemoryWriteFile(void* memory, long len, const io::path& fileName, bool deleteMemoryWhenDropped);
-
-		//! Destructor
-		virtual ~CMemoryWriteFile();
+		virtual s32 read(void* buffer, u32 sizeToRead);
 
 		//! returns how much was written
-		virtual s32 write(const void* buffer, u32 sizeToWrite) _IRR_OVERRIDE_;
+		virtual s32 write(const void* buffer, u32 sizeToWrite);
 
 		//! changes position in file, returns true if successful
-		virtual bool seek(long finalPos, bool relativeMovement = false) _IRR_OVERRIDE_;
+		virtual bool seek(long finalPos, bool relativeMovement = false);
+
+		//! returns size of file
+		virtual long getSize() const;
 
 		//! returns where in the file we are.
-		virtual long getPos() const _IRR_OVERRIDE_;
+		virtual long getPos() const;
 
 		//! returns name of file
-		virtual const io::path& getFileName() const _IRR_OVERRIDE_;
+		virtual const io::path& getFileName() const;
 
 	private:
 

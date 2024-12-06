@@ -12,8 +12,8 @@
 #include <string.h>
 #include <unistd.h>
 #ifndef _IRR_SOLARIS_PLATFORM_
-#ifndef _IRR_ANDROID_PLATFORM_
 #include <sys/types.h>
+#ifdef _IRR_OSX_PLATFORM_
 #include <sys/sysctl.h>
 #endif
 #endif
@@ -25,7 +25,6 @@
 #ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 #include "MacOSX/OSXClipboard.h"
 #endif
-#include "fast_atof.h"
 
 namespace irr
 {
@@ -129,8 +128,6 @@ const c8* COSOperator::getTextFromClipboard() const
 
 bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 {
-	if (MHz)
-		*MHz=0;
 #if defined(_IRR_WINDOWS_API_) && !defined(_WIN32_WCE ) && !defined (_IRR_XBOX_PLATFORM_)
 	LONG Error;
 
@@ -152,6 +149,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 		return false;
 	else if (MHz)
 		*MHz = Speed;
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 
 #elif defined(_IRR_OSX_PLATFORM_)
@@ -165,43 +163,40 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 	return true;
 #else
 	// could probably be read from "/proc/cpuinfo" or "/proc/cpufreq"
-	FILE* file = fopen("/proc/cpuinfo", "r");
-	if (file)
-	{
-		char buffer[1024];
-		fread(buffer, 1, 1024, file);
-		buffer[1023]=0;
-		core::stringc str(buffer);
-		s32 pos = str.find("cpu MHz");
-		if (pos != -1)
-		{
-			pos = str.findNext(':', pos);
-			if (pos != -1)
-			{
-				*MHz = core::fast_atof(str.c_str()+pos+1);
-			}
-		}
-		fclose(file);
-	}
-	return (*MHz != 0);
+
+	return false;
 #endif
 }
 
 bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 {
 #if defined(_IRR_WINDOWS_API_) && !defined (_IRR_XBOX_PLATFORM_)
+
+    #if (_WIN32_WINNT >= 0x0500)
+	MEMORYSTATUSEX MemoryStatusEx;
+ 	MemoryStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
+
+	// cannot fail
+	GlobalMemoryStatusEx(&MemoryStatusEx);
+
+	if (Total)
+		*Total = (u32)(MemoryStatusEx.ullTotalPhys>>10);
+	if (Avail)
+		*Avail = (u32)(MemoryStatusEx.ullAvailPhys>>10);
+	return true;
+	#else
 	MEMORYSTATUS MemoryStatus;
 	MemoryStatus.dwLength = sizeof(MEMORYSTATUS);
 
-	// cannot fail
+ 	// cannot fail
 	GlobalMemoryStatus(&MemoryStatus);
 
-	if (Total)
+ 	if (Total)
 		*Total = (u32)(MemoryStatus.dwTotalPhys>>10);
-	if (Avail)
+ 	if (Avail)
 		*Avail = (u32)(MemoryStatus.dwAvailPhys>>10);
-
-	return true;
+    return true;
+	#endif
 
 #elif defined(_IRR_POSIX_API_) && !defined(__FreeBSD__)
 #if defined(_SC_PHYS_PAGES) && defined(_SC_AVPHYS_PAGES)
@@ -218,22 +213,11 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 		*Avail = (u32)((ps*(long long)ap)>>10);
 	return true;
 #else
-	// TODO: implement for non-availablity of symbols/features
+	// TODO: implement for non-availability of symbols/features
 	return false;
 #endif
-#elif defined(_IRR_OSX_PLATFORM_)
-	int mib[2];
-	int64_t physical_memory;
-	size_t length;
-
-	// Get the Physical memory size
-	mib[0] = CTL_HW;
-	mib[1] = HW_MEMSIZE;
-	length = sizeof(int64_t);
-	sysctl(mib, 2, &physical_memory, &length, NULL, 0);
-	return true;
 #else
-	// TODO: implement for others
+	// TODO: implement for OSX
 	return false;
 #endif
 }

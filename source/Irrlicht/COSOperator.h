@@ -21,35 +21,35 @@ public:
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	COSOperator(const core::stringc& osversion, CIrrDeviceLinux* device);
 #endif
-	COSOperator(const core::stringc& osversion);
+ 	COSOperator(const core::stringc& osversion);
 
 	//! returns the current operation system version as string.
-	virtual const core::stringc& getOperatingSystemVersion() const _IRR_OVERRIDE_;
+	virtual const core::stringc& getOperatingSystemVersion() const;
 
 	//! copies text to the clipboard
-	virtual void copyToClipboard(const c8* text) const _IRR_OVERRIDE_;
+	virtual void copyToClipboard(const c8* text) const;
 
 	//! gets text from the clipboard
 	//! \return Returns 0 if no string is in there.
-	virtual const c8* getTextFromClipboard() const _IRR_OVERRIDE_;
+	virtual const c8* getTextFromClipboard() const;
 
 	//! gets the processor speed in megahertz
 	//! \param Mhz:
 	//! \return Returns true if successful, false if not
-	virtual bool getProcessorSpeedMHz(u32* MHz) const _IRR_OVERRIDE_;
+	virtual bool getProcessorSpeedMHz(u32* MHz) const;
 
 	//! gets the total and available system RAM in kB
 	//! \param Total: will contain the total system memory
 	//! \param Avail: will contain the available memory
 	//! \return Returns true if successful, false if not
-	virtual bool getSystemMemory(u32* Total, u32* Avail) const _IRR_OVERRIDE_;
+	virtual bool getSystemMemory(u32* Total, u32* Avail) const;
 
 private:
 
 	core::stringc OperatingSystem;
 
 #if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
-	CIrrDeviceLinux * IrrDeviceLinux;
+    CIrrDeviceLinux * IrrDeviceLinux;
 #endif
 
 };

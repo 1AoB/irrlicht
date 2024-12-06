@@ -24,13 +24,13 @@ namespace scene
 		//! destructor
 		virtual ~COctreeSceneNode();
 
-		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
+		virtual void OnRegisterSceneNode();
 
 		//! renders the node.
-		virtual void render() _IRR_OVERRIDE_;
+		virtual void render();
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		//! creates the tree
 		bool createTree(IMesh* mesh);
@@ -40,41 +40,41 @@ namespace scene
 		//! This function is needed for inserting the node into the scene hirachy on a
 		//! optimal position for minimizing renderstate changes, but can also be used
 		//! to directly modify the material of a scene node.
-		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
+		virtual video::SMaterial& getMaterial(u32 i);
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
+		virtual u32 getMaterialCount() const;
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the scene node.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_OCTREE; }
+		virtual ESCENE_NODE_TYPE getType() const { return ESNT_OCTREE; }
 
 		//! Sets a new mesh to display
-		virtual void setMesh(IMesh* mesh) _IRR_OVERRIDE_;
+		virtual void setMesh(IMesh* mesh);
 
 		//! Get the currently defined mesh for display.
-		virtual IMesh* getMesh(void) _IRR_OVERRIDE_;
+		virtual IMesh* getMesh(void);
 
 		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
-		virtual void setReadOnlyMaterials(bool readonly) _IRR_OVERRIDE_;
+		virtual void setReadOnlyMaterials(bool readonly);
 
 		//! Check if the scene node should not copy the materials of the mesh but use them in a read only style
-		virtual bool isReadOnlyMaterials() const _IRR_OVERRIDE_;
+		virtual bool isReadOnlyMaterials() const;
 
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh,
-			s32 id, bool zfailmethod=true, f32 infinity=10000.0f) _IRR_OVERRIDE_;
+			s32 id, bool zfailmethod=true, f32 infinity=10000.0f);
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
 		//! or to remove attached childs.
-		virtual bool removeChild(ISceneNode* child) _IRR_OVERRIDE_;
+		virtual bool removeChild(ISceneNode* child);
 
 	private:
 

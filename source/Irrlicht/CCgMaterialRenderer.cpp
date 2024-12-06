@@ -22,10 +22,6 @@ CCgUniform::CCgUniform(const CGparameter& parameter, bool global) : Parameter(pa
 		Space = CG_PROGRAM;
 }
 
-CCgUniform::~CCgUniform()
-{
-}
-
 const core::stringc& CCgUniform::getName() const
 {
 	return Name;
@@ -154,14 +150,17 @@ void CCgUniformSampler2D::update(const void* data, const SMaterial& material) co
 {
 }
 
-CCgMaterialRenderer::CCgMaterialRenderer(IShaderConstantSetCallBack* callback, s32 userData) :
-	CallBack(callback), UserData(userData),
+CCgMaterialRenderer::CCgMaterialRenderer(IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData) :
+	CallBack(callback), BaseMaterial(baseMaterial), UserData(userData),
 	VertexProgram(0), FragmentProgram(0), GeometryProgram(0), VertexProfile(CG_PROFILE_UNKNOWN), FragmentProfile(CG_PROFILE_UNKNOWN), GeometryProfile(CG_PROFILE_UNKNOWN),
 	Material(IdentityMaterial), Error(CG_NO_ERROR)
 {
 	#ifdef _DEBUG
 	setDebugName("CCgMaterialRenderer");
 	#endif
+
+	if(BaseMaterial)
+		BaseMaterial->grab();
 
 	if(CallBack)
 		CallBack->grab();
@@ -172,26 +171,18 @@ CCgMaterialRenderer::~CCgMaterialRenderer()
 	if(CallBack)
 		CallBack->drop();
 
+	if(BaseMaterial)
+		BaseMaterial->drop();
+
 	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
 		delete UniformInfo[i];
 
 	UniformInfo.clear();
 }
 
-s32 CCgMaterialRenderer::getVertexShaderConstantID(const c8* name)
+bool CCgMaterialRenderer::isTransparent() const
 {
-	return getPixelShaderConstantID(name);
-}
-
-s32 CCgMaterialRenderer::getPixelShaderConstantID(const c8* name)
-{
-	for(u32 i = 0; i < UniformInfo.size(); ++i)
-	{
-		if(UniformInfo[i]->getName() == name)
-			return i;
-	}
-
-	return -1;
+	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }
 
 void CCgMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
@@ -199,39 +190,75 @@ void CCgMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegi
 	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
+bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const f32* floats, int count)
+{
+	return setPixelShaderConstant(name, floats, count);
+}
+
+bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const bool* bools, int count)
+{
+	return setPixelShaderConstant(name, bools, count);
+}
+
+bool CCgMaterialRenderer::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+{
+	return setPixelShaderConstant(name, ints, count);
+}
+
 void CCgMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
-bool CCgMaterialRenderer::setVertexShaderConstant(s32 index, const f32* floats, int count)
+bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
-	return setPixelShaderConstant(index, floats, count);
+	bool Status = false;
+
+	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
+	{
+		if(UniformInfo[i]->getName() == name)
+		{
+			UniformInfo[i]->update(floats, Material);
+
+			Status = true;
+		}
+	}
+
+	return Status;
 }
 
-bool CCgMaterialRenderer::setVertexShaderConstant(s32 index, const s32* ints, int count)
+bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const s32* ints, int count)
 {
-	return setPixelShaderConstant(index, ints, count);
+	bool Status = false;
+
+	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
+	{
+		if(UniformInfo[i]->getName() == name)
+		{
+			UniformInfo[i]->update(ints, Material);
+
+			Status = true;
+		}
+	}
+
+	return Status;
 }
 
-bool CCgMaterialRenderer::setPixelShaderConstant(s32 index, const f32* floats, int count)
+bool CCgMaterialRenderer::setPixelShaderConstant(const c8* name, const bool* bools, int count)
 {
-	if(index < 0)
-		return false;
+	bool Status = false;
 
-	UniformInfo[index]->update(floats, Material);
+	for(unsigned int i = 0; i < UniformInfo.size(); ++i)
+	{
+		if(UniformInfo[i]->getName() == name)
+		{
+			UniformInfo[i]->update(bools, Material);
 
-	return true;
-}
+			Status = true;
+		}
+	}
 
-bool CCgMaterialRenderer::setPixelShaderConstant(s32 index, const s32* ints, int count)
-{
-	if(index < 0)
-		return false;
-
-	UniformInfo[index]->update(ints, Material);
-
-	return true;
+	return Status;
 }
 
 void CCgMaterialRenderer::getUniformList()

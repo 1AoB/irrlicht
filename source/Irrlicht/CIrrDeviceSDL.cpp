@@ -57,7 +57,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_ANYFORMAT),
 	MouseX(0), MouseY(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Resizable(false), WindowHasFocus(false), WindowMinimized(false)
+	Resizable(false), WindowMinimized(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceSDL");
@@ -220,12 +220,7 @@ void CIrrDeviceSDL::createDriver()
 	{
 	case video::EDT_DIRECT3D8:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
-
-		VideoDriver = video::createDirectX8Driver(CreationParams, FileSystem, HWnd);
-		if (!VideoDriver)
-		{
-			os::Printer::log("Could not create DIRECT3D8 Driver.", ELL_ERROR);
-		}
+		os::Printer::log("SDL device does not support DIRECT38 driver. Try another one.", ELL_ERROR);
 		#else
 		os::Printer::log("DIRECT3D8 Driver was not compiled into this dll. Try another one.", ELL_ERROR);
 		#endif // _IRR_COMPILE_WITH_DIRECT3D_8_
@@ -234,12 +229,7 @@ void CIrrDeviceSDL::createDriver()
 
 	case video::EDT_DIRECT3D9:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-
-		VideoDriver = video::createDirectX9Driver(CreationParams, FileSystem, HWnd);
-		if (!VideoDriver)
-		{
-			os::Printer::log("Could not create DIRECT3D9 Driver.", ELL_ERROR);
-		}
+		os::Printer::log("SDL device does not support DIRECT3D9 driver. Try another one.", ELL_ERROR);
 		#else
 		os::Printer::log("DIRECT3D9 Driver was not compiled into this dll. Try another one.", ELL_ERROR);
 		#endif // _IRR_COMPILE_WITH_DIRECT3D_9_
@@ -423,10 +413,6 @@ bool CIrrDeviceSDL::run()
 			break;
 
 		case SDL_ACTIVEEVENT:
-			if ((SDL_event.active.state == SDL_APPMOUSEFOCUS) ||
-					(SDL_event.active.state == SDL_APPINPUTFOCUS))
-				WindowHasFocus = (SDL_event.active.gain==1);
-			else
 			if (SDL_event.active.state == SDL_APPACTIVE)
 				WindowMinimized = (SDL_event.active.gain!=1);
 			break;
@@ -708,15 +694,34 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 	{
 		// enumerate video modes.
 		const SDL_VideoInfo *vi = SDL_GetVideoInfo();
-		SDL_Rect **modes = SDL_ListModes(vi->vfmt, SDL_Flags);
-		if (modes != 0)
+
+		SDL_PixelFormat pixelFormat = *(vi->vfmt);
+
+		core::array<Uint8> checkBitsPerPixel;
+		checkBitsPerPixel.push_back(8);
+		checkBitsPerPixel.push_back(16);
+		checkBitsPerPixel.push_back(24);
+		checkBitsPerPixel.push_back(32);
+		if ( pixelFormat.BitsPerPixel > 32 )
+			checkBitsPerPixel.push_back(pixelFormat.BitsPerPixel);
+
+		for ( u32 i=0; i<checkBitsPerPixel.size(); ++i)
 		{
-			if (modes == (SDL_Rect **)-1)
-				os::Printer::log("All modes available.\n");
-			else
+			pixelFormat.BitsPerPixel = checkBitsPerPixel[i];
+			SDL_Rect **modes = SDL_ListModes(&pixelFormat, SDL_Flags|SDL_FULLSCREEN);
+			if (modes != 0)
 			{
-				for (u32 i=0; modes[i]; ++i)
-					VideoModeList->addMode(core::dimension2d<u32>(modes[i]->w, modes[i]->h), vi->vfmt->BitsPerPixel);
+				if (modes == (SDL_Rect **)-1)
+				{
+					core::stringc strLog("All modes available for bit-depth ");
+					strLog += core::stringc(pixelFormat.BitsPerPixel);
+					os::Printer::log(strLog.c_str());
+				}
+				else
+				{
+					for (u32 i=0; modes[i]; ++i)
+						VideoModeList->addMode(core::dimension2d<u32>(modes[i]->w, modes[i]->h), vi->vfmt->BitsPerPixel);
+				}
 			}
 		}
 	}
@@ -725,17 +730,105 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 }
 
 
+#if defined(_IRR_COMPILE_WITH_OPENGL_) && defined(_IRR_WINDOWS_)
+#define IRR_SHARE_GL_RESOURCE_ON_RESIZE 
+
+// Code from http://www.bytehazard.com/articles/sdlres.html (with some changes) to share GL resources used in SDL on Win32 while switching GL context
+static HGLRC startShareGLResources()
+{
+	// get window handle from SDL
+	SDL_SysWMinfo info;
+	SDL_VERSION(&info.version);
+	if (SDL_GetWMInfo(&info) == -1) 
+	{
+		return 0;
+	}
+
+	 // get device context handle
+	HDC tempDC = GetDC( info.window );
+
+	// create temporary context
+	HGLRC tempRC = wglCreateContext( tempDC );
+	if (tempRC == NULL) 
+	{
+		ReleaseDC(info.window, tempDC);
+		return 0;
+	}
+ 
+	// share resources to temporary context
+	SetLastError(0);
+	if (!wglShareLists(info.hglrc, tempRC)) 
+	{
+		ReleaseDC(info.window, tempDC);
+		return 0;
+	}
+
+	return tempRC;
+}
+
+static bool endShareGLResources(HGLRC tempRC)
+{
+	SDL_SysWMinfo info;
+	SDL_VERSION(&info.version);
+	if (SDL_GetWMInfo(&info) == -1) 
+	{
+		return false;
+	}
+ 
+	// share resources to new SDL-created context
+	if (!wglShareLists(tempRC, info.hglrc)) 
+	{
+		return false;
+	}
+ 
+	// we no longer need our temporary context
+	if (!wglDeleteContext(tempRC)) 
+	{
+		return false;
+	}
+ 
+	return true;
+}
+#endif
+
+
 //! Sets if the window should be resizable in windowed mode.
 void CIrrDeviceSDL::setResizable(bool resize)
 {
 	if (resize != Resizable)
 	{
+#ifdef  IRR_SHARE_GL_RESOURCE_ON_RESIZE
+		// Workaround: 	On Windows SDL loses the OpenGL context when the SDL_Flags changes.
+		// So we create a temporary OpenGL context to share the GL resources.
+		// It doesn't seem to happen on other platforms.
+		const bool shareGLresources = (SDL_Flags & SDL_OPENGL) != 0;
+		HGLRC shareRC = 0;
+		if ( shareGLresources )
+		{
+			shareRC = startShareGLResources();
+			if ( shareRC == 0  )
+			{
+				os::Printer::log("Can't change resizable without losing GL context.");
+				return;
+			}
+		}
+#endif
+
+
 		if (resize)
 			SDL_Flags |= SDL_RESIZABLE;
 		else
 			SDL_Flags &= ~SDL_RESIZABLE;
+
 		Screen = SDL_SetVideoMode( 0, 0, 0, SDL_Flags );
 		Resizable = resize;
+
+#ifdef IRR_SHARE_GL_RESOURCE_ON_RESIZE
+		if ( shareRC != 0 )
+		{
+			endShareGLResources(shareRC);
+		}
+#endif
 	}
 }
 
@@ -753,12 +846,6 @@ void CIrrDeviceSDL::maximizeWindow()
 	// do nothing
 }
 
-//! Get the position of this window on screen
-core::position2di getWindowPosition()
-{
-    return core::position2di(-1, -1);
-}
-
 
 //! Restore original window size
 void CIrrDeviceSDL::restoreWindow()
@@ -770,14 +857,15 @@ void CIrrDeviceSDL::restoreWindow()
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {
-	return (WindowHasFocus && !WindowMinimized);
+	const Uint8 appState = SDL_GetAppState();
+	return (appState&SDL_APPACTIVE && appState&SDL_APPINPUTFOCUS) ? true : false;
 }
 
 
 //! returns if window has focus.
 bool CIrrDeviceSDL::isWindowFocused() const
 {
-	return WindowHasFocus;
+	return (SDL_GetAppState()&SDL_APPINPUTFOCUS) ? true : false;
 }
 
 

@@ -37,9 +37,6 @@ IImageLoader* createImageLoaderPSD();
 //! creates a loader which is able to load dds images
 IImageLoader* createImageLoaderDDS();
 
-//! creates a loader which is able to load pvr images
-IImageLoader* createImageLoaderPVR();
-
 //! creates a loader which is able to load pcx images
 IImageLoader* createImageLoaderPCX();
 
@@ -124,10 +121,8 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 
 	// create surface loader
 
-#ifdef _IRR_COMPILE_WITH_HALFLIFE_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderHalfLife());
-#endif
 #ifdef _IRR_COMPILE_WITH_WAL_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderHalfLife());
 	SurfaceLoader.push_back(video::createImageLoaderWAL());
 #endif
 #ifdef _IRR_COMPILE_WITH_LMP_LOADER_
@@ -142,11 +137,8 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
 #endif
-#if defined(_IRR_COMPILE_WITH_DDS_LOADER_) || defined(_IRR_COMPILE_WITH_DDS_DECODER_LOADER_)
+#ifdef _IRR_COMPILE_WITH_DDS_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderDDS());
-#endif
-#ifdef _IRR_COMPILE_WITH_PVR_LOADER_
-	SurfaceLoader.push_back(video::createImageLoaderPVR());
 #endif
 #ifdef _IRR_COMPILE_WITH_PCX_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPCX());
@@ -196,7 +188,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	InitMaterial2D.AntiAliasing=video::EAAM_OFF;
 	InitMaterial2D.Lighting=false;
 	InitMaterial2D.ZWriteEnable=false;
-	InitMaterial2D.ZBuffer=video::ECFN_DISABLED;
+	InitMaterial2D.ZBuffer=video::ECFN_NEVER;
 	InitMaterial2D.UseMipMaps=false;
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
@@ -515,10 +507,7 @@ video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io:
 	{
 		// create texture from surface
 		texture = createDeviceDependentTexture(image, hashName.size() ? hashName : file->getFileName() );
-
-		if (texture)
-			os::Printer::log("Loaded texture", file->getFileName());
-
+		os::Printer::log("Loaded texture", file->getFileName());
 		image->drop();
 	}
 
@@ -562,33 +551,6 @@ video::ITexture* CNullDriver::findTexture(const io::path& filename)
 }
 
 
-//! creates a Texture
-ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
-				  const io::path& name, ECOLOR_FORMAT format)
-{
-	if(IImage::isRenderTargetOnlyFormat(format))
-	{
-		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
-		return 0;
-	}
-
-	if ( 0 == name.size () )
-		return 0;
-
-	IImage* image = new CImage(format, size);
-	ITexture* t = createDeviceDependentTexture(image, name);
-	image->drop();
-
-	if (t)
-	{
-		addTexture(t);
-		t->drop();
-	}
-
-	return t;
-}
-
-
 //! Creates a texture from a loaded IImage.
 ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mipmapData)
 {
@@ -605,21 +567,31 @@ ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mip
 }
 
 
-//! Creates a cube texture from loaded IImages.
-ITexture* CNullDriver::addTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
-	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
+//! creates a Texture
+ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
+				  const io::path& name, ECOLOR_FORMAT format)
 {
-	if ( 0 == name.size() || !posXImage || !negXImage || !posYImage || !negYImage || !posZImage || !negZImage)
+	if(IImage::isRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
+	if ( 0 == name.size () )
 		return 0;
 
-	ITexture* t = createDeviceDependentTextureCube(name, posXImage, negXImage, posYImage, negYImage, posZImage, negZImage);
+	IImage* image = new CImage(format, size);
+	ITexture* t = createDeviceDependentTexture(image, name);
+	image->drop();
+	addTexture(t);
+
 	if (t)
-	{
-		addTexture(t);
 		t->drop();
-	}
+
 	return t;
 }
+
+
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
@@ -628,14 +600,6 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::p
 	return new SDummyTexture(name);
 }
 
-
-//! returns a device dependent texture from a software surface (IImage)
-//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CNullDriver::createDeviceDependentTextureCube(const io::path& name, IImage* posXImage, IImage* negXImage, 
-	IImage* posYImage, IImage* negYImage, IImage* posZImage, IImage* negZImage)
-{
-	return new SDummyTexture(name);
-}
 
 //! set or reset special render targets
 bool CNullDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
@@ -862,7 +826,7 @@ void CNullDriver::drawPixel(u32 x, u32 y, const SColor & color)
 }
 
 
-//! Draws a non filled concyclic regular 2d polyon.
+//! Draws a non filled concyclic regular 2d polygon.
 void CNullDriver::draw2DPolygon(core::position2d<s32> center,
 	f32 radius, video::SColor color, s32 count)
 {
@@ -948,7 +912,7 @@ const wchar_t* CNullDriver::getName() const
 
 
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-//! this: Frist, draw all geometry. Then use this method, to draw the shadow
+//! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
 void CNullDriver::drawStencilShadowVolume(const core::array<core::vector3df>& triangles, bool zfail, u32 debugDataVisible)
 {
@@ -2381,115 +2345,6 @@ void CNullDriver::printVersion()
 	core::stringw namePrint = L"Using renderer: ";
 	namePrint += getName();
 	os::Printer::log(namePrint.c_str(), ELL_INFORMATION);
-}
-
-
-// Check support for compression texture format.
-bool CNullDriver::checkColorFormat(ECOLOR_FORMAT format, const core::dimension2d<u32>& textureSize) const
-{
-	bool status = true;
-
-	switch (format)
-	{
-		case ECF_DXT1:
-		case ECF_DXT2:
-		case ECF_DXT3:
-		case ECF_DXT4:
-		case ECF_DXT5:
-			{
-				core::dimension2d<u32> potSize = textureSize.getOptimalSize(true, false);
-
-				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_DXT))
-				{
-					os::Printer::log("DXT texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-				else if(potSize != textureSize)
-				{
-					os::Printer::log("Invalid size of image for DXT compressed texture, size of image must be POT.", ELL_ERROR);
-					status = false;
-				}
-			}
-			break;
-		case ECF_PVRTC_RGB2:
-		case ECF_PVRTC_ARGB2:
-		case ECF_PVRTC_RGB4:
-		case ECF_PVRTC_ARGB4:
-			{
-				core::dimension2d<u32> potSize = textureSize.getOptimalSize(true, true);
-
-				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC))
-				{
-					os::Printer::log("PVRTC texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-				else if(potSize != textureSize)
-				{
-					os::Printer::log("Invalid size of image for PVRTC compressed texture, size of image must be POT and squared.", ELL_ERROR);
-					status = false;
-				}
-			}
-			break;
-		case ECF_PVRTC2_ARGB2:
-		case ECF_PVRTC2_ARGB4:
-			{
-				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_PVRTC2))
-				{
-					os::Printer::log("PVRTC2 texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-			}
-			break;
-		case ECF_ETC1:
-			{
-				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_ETC1))
-				{
-					os::Printer::log("ETC1 texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-			}
-			break;
-		case ECF_ETC2_RGB:
-		case ECF_ETC2_ARGB:
-			{
-				if(!queryFeature(EVDF_TEXTURE_COMPRESSED_ETC2))
-				{
-					os::Printer::log("ETC2 texture compression not available.", ELL_ERROR);
-					status = false;
-				}
-			}
-			break;
-		default:
-			break;
-	}
-
-	return status;
-}
-
-
-// Check support for compression texture format.
-bool CNullDriver::checkTextureCube(IImage* posXImage, IImage* negXImage, IImage* posYImage, IImage* negYImage,
-	IImage* posZImage, IImage* negZImage) const
-{
-	if (!queryFeature(EVDF_TEXTURE_CUBE_MAP))
-		return false;
-
-	IImage* image[6] = {
-		posXImage,
-		negXImage,
-		posYImage,
-		negYImage,
-		posZImage,
-		negZImage
-	};
-
-	for (u32 i = 1; i < 6; ++i)
-	{
-		if (image[0]->getDimension() != image[i]->getDimension() || image[0]->getColorFormat() != image[i]->getColorFormat())
-			return false;
-	}
-
-	return true;
 }
 
 

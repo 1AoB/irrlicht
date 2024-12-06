@@ -273,7 +273,7 @@ void CColorConverter::convert16bitToA8R8G8B8andResize(const s16* in, s32* out, s
 		return;
 
 	// note: this is very very slow. (i didn't want to write a fast version.
-	// but hopefully, nobody wants to convert surfaces every frame.
+	// but hopefully, nobody wants to convert surfaces every frame.	
 
 	f32 sourceXStep = (f32)currentWidth / (f32)newWidth;
 	f32 sourceYStep = (f32)currentHeight / (f32)newHeight;
@@ -355,18 +355,6 @@ void CColorConverter::convert_A1R5G5B5toB8G8R8(const void* sP, s32 sN, void* dP)
 
 		sB += 1;
 		dB += 3;
-	}
-}
-
-void CColorConverter::convert_A1R5G5B5toR5G5B5A1(const void* sP, s32 sN, void* dP)
-{
-	const u16* sB = (const u16*)sP;
-	u16* dB = (u16*)dP;
-
-	for (s32 x = 0; x < sN; ++x)
-	{
-		*dB = (*sB<<1)|(*sB>>15);
-		++sB; ++dB;
 	}
 }
 
@@ -528,30 +516,6 @@ void CColorConverter::convert_B8G8R8toA8R8G8B8(const void* sP, s32 sN, void* dP)
 	}
 }
 
-void CColorConverter::convert_A8R8G8B8toR8G8B8A8(const void* sP, s32 sN, void* dP)
-{
-	const u32* sB = (const u32*)sP;
-	u32* dB = (u32*)dP;
-
-	for (s32 x = 0; x < sN; ++x)
-	{
-		*dB++ = (*sB<<8) | (*sB>>24);
-		++sB;
-	}
-}
-
-void CColorConverter::convert_A8R8G8B8toA8B8G8R8(const void* sP, s32 sN, void* dP)
-{
-	const u32* sB = (const u32*)sP;
-	u32* dB = (u32*)dP;
-
-	for (s32 x = 0; x < sN; ++x)
-	{
-		*dB++ = (*sB&0xff00ff00)|((*sB&0x00ff0000)>>16)|((*sB&0x000000ff)<<16);
-		++sB;
-	}
-}
-
 void CColorConverter::convert_B8G8R8A8toA8R8G8B8(const void* sP, s32 sN, void* dP)
 {
 	u8* sB = (u8*)sP;
@@ -568,22 +532,6 @@ void CColorConverter::convert_B8G8R8A8toA8R8G8B8(const void* sP, s32 sN, void* d
 		dB += 4;
 	}
 
-}
-
-void CColorConverter::convert_R8G8B8toB8G8R8(const void* sP, s32 sN, void* dP)
-{
-	u8* sB = (u8*)sP;
-	u8* dB = (u8*)dP;
-
-	for (s32 x = 0; x < sN; ++x)
-	{
-		dB[2] = sB[0];
-		dB[1] = sB[1];
-		dB[0] = sB[2];
-
-		sB += 3;
-		dB += 3;
-	}
 }
 
 void CColorConverter::convert_R8G8B8toR5G6B5(const void* sP, s32 sN, void* dP)
@@ -680,8 +628,10 @@ void CColorConverter::convert_viaFormat(const void* sP, ECOLOR_FORMAT sF, s32 sN
 				case ECF_R8G8B8:
 					convert_A1R5G5B5toR8G8B8(sP, sN, dP);
 				break;
+#ifndef _DEBUG
 				default:
 					break;
+#endif
 			}
 		break;
 		case ECF_R5G6B5:
@@ -699,8 +649,10 @@ void CColorConverter::convert_viaFormat(const void* sP, ECOLOR_FORMAT sF, s32 sN
 				case ECF_R8G8B8:
 					convert_R5G6B5toR8G8B8(sP, sN, dP);
 				break;
+#ifndef _DEBUG
 				default:
 					break;
+#endif
 			}
 		break;
 		case ECF_A8R8G8B8:
@@ -718,8 +670,10 @@ void CColorConverter::convert_viaFormat(const void* sP, ECOLOR_FORMAT sF, s32 sN
 				case ECF_R8G8B8:
 					convert_A8R8G8B8toR8G8B8(sP, sN, dP);
 				break;
+#ifndef _DEBUG
 				default:
 					break;
+#endif
 			}
 		break;
 		case ECF_R8G8B8:
@@ -737,12 +691,12 @@ void CColorConverter::convert_viaFormat(const void* sP, ECOLOR_FORMAT sF, s32 sN
 				case ECF_R8G8B8:
 					convert_R8G8B8toR8G8B8(sP, sN, dP);
 				break;
+#ifndef _DEBUG
 				default:
 					break;
+#endif
 			}
 		break;
-		default:
-			break;
 	}
 }
 

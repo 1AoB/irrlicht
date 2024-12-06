@@ -67,6 +67,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -77,6 +78,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -88,6 +90,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -98,6 +101,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Static lib - Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -108,6 +112,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -119,6 +124,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -129,6 +135,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>NotSet</CharacterSet>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -271,7 +278,7 @@
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'" />
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\Include;C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\Include;$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(DXSDK_DIR)include;$(CG_INC_PATH);$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">obj\$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">obj\$(Configuration)64\</IntDir>
@@ -289,8 +296,7 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release - Fast FPU|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|Win32'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Static lib - Release|x64'">$(DXSDK_DIR)include;$(IncludePath)</IncludePath>
-    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_PCEMULATION_2.07.27.0484\Builds\OGLES2\WindowsPC\Lib;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Imagination Technologies\POWERVR SDK\OGLES2_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES2\WindowsX86\Lib;C:\Imagination Technologies\POWERVR SDK\OGLES_WINDOWS_X86EMULATION_2.08.28.0634\Builds\OGLES\WindowsX86\Lib;$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(DXSDK_DIR)Lib\x86;$(CG_LIB_PATH);$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|Win32'">$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
@@ -324,7 +330,6 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -335,7 +340,7 @@
     </ProjectReference>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -343,7 +348,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>..\..\lib\Win32-visualstudio\Irrlicht.lib</ImportLibrary>
-      <Version>1.9</Version>
+      <Version>1.8</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -413,14 +418,14 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>..\..\bin\Win32-visualstudio\Irrlicht.dll</OutputFile>
       <IgnoreSpecificDefaultLibraries>libci.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>..\..\lib\Win32-visualstudio\Irrlicht.lib</ImportLibrary>
-      <Version>1.9</Version>
+      <Version>1.8</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -504,7 +509,7 @@
       </DataExecutionPrevention>
       <ImportLibrary>..\..\lib\Win32-visualstudio\Irrlicht.lib</ImportLibrary>
       <SubSystem>Windows</SubSystem>
-      <Version>1.9</Version>
+      <Version>1.8</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - Fast FPU|x64'">
@@ -704,7 +709,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>
       </DebugInformationFormat>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -791,7 +796,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>..\..\lib\Win32-visualstudio\Irrlicht.lib</ImportLibrary>
-      <Version>1.9</Version>
+      <Version>1.8</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SDL-Debug|x64'">
@@ -832,11 +837,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\driverChoice.h" />
     <ClInclude Include="..\..\include\EDriverFeatures.h" />
     <ClInclude Include="..\..\include\EMaterialFlags.h" />
     <ClInclude Include="..\..\include\IAnimatedMeshMD3.h" />
-    <ClInclude Include="..\..\include\IContextManager.h" />
     <ClInclude Include="..\..\include\IEventReceiver.h" />
     <ClInclude Include="..\..\include\ILogger.h" />
     <ClInclude Include="..\..\include\IOSOperator.h" />
@@ -884,7 +887,6 @@
     <ClInclude Include="..\..\include\position2d.h" />
     <ClInclude Include="..\..\include\quaternion.h" />
     <ClInclude Include="..\..\include\rect.h" />
-    <ClInclude Include="..\..\include\SSharedMeshBuffer.h" />
     <ClInclude Include="..\..\include\triangle3d.h" />
     <ClInclude Include="..\..\include\vector2d.h" />
     <ClInclude Include="..\..\include\vector3d.h" />
@@ -996,25 +998,11 @@
     <ClInclude Include="CD3D9CgMaterialRenderer.h" />
     <ClInclude Include="CDefaultSceneNodeAnimatorFactory.h" />
     <ClInclude Include="CDefaultSceneNodeFactory.h" />
-    <ClInclude Include="CEGLManager.h" />
     <ClInclude Include="CGeometryCreator.h" />
-    <ClInclude Include="CImageLoaderPVR.h" />
     <ClInclude Include="CMeshCache.h" />
     <ClInclude Include="CMeshManipulator.h" />
     <ClInclude Include="COpenGLCgMaterialRenderer.h" />
-    <ClInclude Include="COGLES2Driver.h" />
-    <ClInclude Include="COGLES2ExtensionHandler.h" />
-    <ClInclude Include="COGLES2FixedPipelineRenderer.h" />
-    <ClInclude Include="COGLES2NormalMapRenderer.h" />
-    <ClInclude Include="COGLES2ParallaxMapRenderer.h" />
-    <ClInclude Include="COGLES2Renderer2D.h" />
-    <ClInclude Include="COGLES2Texture.h" />
-    <ClInclude Include="COGLESDriver.h" />
-    <ClInclude Include="COGLESExtensionHandler.h" />
-    <ClInclude Include="COGLESMaterialRenderer.h" />
-    <ClInclude Include="COGLESTexture.h" />
     <ClInclude Include="CSceneManager.h" />
-    <ClInclude Include="CWGLManager.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="CSMFMeshFileLoader.h" />
     <ClInclude Include="C3DSMeshFileLoader.h" />
@@ -1260,23 +1248,10 @@
     <ClCompile Include="CD3D9CgMaterialRenderer.cpp" />
     <ClCompile Include="CDefaultSceneNodeAnimatorFactory.cpp" />
     <ClCompile Include="CDefaultSceneNodeFactory.cpp" />
-    <ClCompile Include="CEGLManager.cpp" />
     <ClCompile Include="CGeometryCreator.cpp" />
-    <ClCompile Include="CImageLoaderPVR.cpp" />
     <ClCompile Include="CMeshCache.cpp" />
     <ClCompile Include="CMeshManipulator.cpp" />
     <ClCompile Include="COpenGLCgMaterialRenderer.cpp" />
-    <ClCompile Include="COGLES2Driver.cpp" />
-    <ClCompile Include="COGLES2ExtensionHandler.cpp" />
-    <ClCompile Include="COGLES2FixedPipelineRenderer.cpp" />
-    <ClCompile Include="COGLES2NormalMapRenderer.cpp" />
-    <ClCompile Include="COGLES2ParallaxMapRenderer.cpp" />
-    <ClCompile Include="COGLES2Renderer2D.cpp" />
-    <ClCompile Include="COGLES2MaterialRenderer.cpp" />
-    <ClCompile Include="COGLES2Texture.cpp" />
-    <ClCompile Include="COGLESDriver.cpp" />
-    <ClCompile Include="COGLESExtensionHandler.cpp" />
-    <ClCompile Include="COGLESTexture.cpp" />
     <ClCompile Include="CSceneManager.cpp" />
     <ClCompile Include="C3DSMeshFileLoader.cpp" />
     <ClCompile Include="CSMFMeshFileLoader.cpp" />
@@ -1302,7 +1277,6 @@
     <ClCompile Include="CQ3LevelMesh.cpp" />
     <ClCompile Include="CSkinnedMesh.cpp" />
     <ClCompile Include="CSTLMeshFileLoader.cpp" />
-    <ClCompile Include="CWGLManager.cpp" />
     <ClCompile Include="CXMeshFileLoader.cpp" />
     <ClCompile Include="CAnimatedMeshSceneNode.cpp" />
     <ClCompile Include="CBillboardSceneNode.cpp" />
@@ -1438,7 +1412,6 @@
     <ClCompile Include="CLogger.cpp" />
     <ClCompile Include="COSOperator.cpp" />
     <ClCompile Include="Irrlicht.cpp" />
-    <ClCompile Include="leakHunter.cpp" />
     <ClCompile Include="os.cpp" />
     <ClCompile Include="lzma\LzmaDec.c" />
     <ClCompile Include="zlib\adler32.c" />

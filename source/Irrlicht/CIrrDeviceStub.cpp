@@ -21,7 +21,7 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 : IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0),
 	Timer(0), CursorControl(0), UserReceiver(params.EventReceiver),
 	Logger(0), Operator(0), Randomizer(0), FileSystem(0),
-	InputReceivingSceneManager(0), VideoModeList(0), ContextManager(0),
+	InputReceivingSceneManager(0), VideoModeList(0),
 	CreationParams(params), Close(false)
 {
 	Timer = new CTimer(params.UsePerformanceTimer);
@@ -62,9 +62,6 @@ CIrrDeviceStub::~CIrrDeviceStub()
 
 	if (VideoDriver)
 		VideoDriver->drop();
-
-	if (ContextManager)
-		ContextManager->drop();
 
 	if (SceneManager)
 		SceneManager->drop();
@@ -111,12 +108,6 @@ video::IVideoDriver* CIrrDeviceStub::getVideoDriver()
 	return VideoDriver;
 }
 
-
-//! return the context manager
-video::IContextManager* CIrrDeviceStub::getContextManager()
-{
-	return ContextManager;
-}
 
 
 //! return file system
@@ -333,8 +324,8 @@ IRandomizer* CIrrDeviceStub::createDefaultRandomizer() const
 //! Sets the input receiving scene manager.
 void CIrrDeviceStub::setInputReceivingSceneManager(scene::ISceneManager* sceneManager)
 {
-    if (sceneManager)
-        sceneManager->grab();
+	if (sceneManager)
+		sceneManager->grab();
 	if (InputReceivingSceneManager)
 		InputReceivingSceneManager->drop();
 
@@ -359,78 +350,6 @@ video::ECOLOR_FORMAT CIrrDeviceStub::getColorFormat() const
 bool CIrrDeviceStub::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 	return false;
-}
-
-//! No-op in this implementation
-bool CIrrDeviceStub::activateAccelerometer(float updateInterval)
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::deactivateAccelerometer()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::isAccelerometerActive()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::isAccelerometerAvailable()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::activateGyroscope(float updateInterval)
-{
-    return false;
-}
-
-//! No-op in this implementation
-bool CIrrDeviceStub::deactivateGyroscope()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::isGyroscopeActive()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::isGyroscopeAvailable()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::activateDeviceMotion(float updateInterval)
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::deactivateDeviceMotion()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::isDeviceMotionActive()
-{
-    return false;
-}
-    
-//! No-op in this implementation
-bool CIrrDeviceStub::isDeviceMotionAvailable()
-{
-    return false;
 }
 
 /*!

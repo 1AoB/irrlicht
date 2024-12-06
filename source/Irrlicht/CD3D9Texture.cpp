@@ -34,7 +34,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 						   const io::path& name, const ECOLOR_FORMAT format)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(size), ImageSize(size), Pitch(0), ColorFormat(ECF_UNKNOWN),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true), IsCompressed(false)
+	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
@@ -53,7 +53,7 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 			   u32 flags, const io::path& name, void* mipmapData)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(0,0), ImageSize(0,0), Pitch(0), ColorFormat(ECF_UNKNOWN),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false), IsCompressed(false)
+	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
@@ -65,32 +65,18 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 	if (Device)
 		Device->AddRef();
 
-	IsCompressed = IImage::isCompressedFormat(image->getColorFormat());
-
-	if (createTexture(flags, image))
+	if (image)
 	{
-		if (copyTexture(image))
+		if (createTexture(flags, image))
 		{
-			if (IsCompressed && !mipmapData)
-				if (HasMipMaps && image->hasMipMaps())
-				{
-					u32 compressedDataSize = 0;
-
-					if(ColorFormat == ECF_DXT1)
-						compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 8;
-					else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-						compressedDataSize = ((image->getDimension().Width + 3) / 4) * ((image->getDimension().Height + 3) / 4) * 16;
-
-					mipmapData = static_cast<u8*>(image->lock())+compressedDataSize;
-				}
-				else
-					HasMipMaps = false;
-
-			regenerateMipMapLevels(mipmapData);
+			if (copyTexture(image))
+			{
+				regenerateMipMapLevels(mipmapData);
+			}
 		}
+		else
+			os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 	}
-	else
-		os::Printer::log("Could not create DIRECT3D9 Texture.", ELL_WARNING);
 }
 
 
@@ -245,13 +231,11 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	{
 		if ((upperDesc.Format == D3DFMT_A1R5G5B5) || (upperDesc.Format == D3DFMT_R5G6B5))
 			copy16BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
-					upperDesc.Width, upperDesc.Height,
 					lowerDesc.Width, lowerDesc.Height,
 					upperlr.Pitch, lowerlr.Pitch);
 		else
 		if (upperDesc.Format == D3DFMT_A8R8G8B8)
 			copy32BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
-					upperDesc.Width, upperDesc.Height,
 					lowerDesc.Width, lowerDesc.Height,
 					upperlr.Pitch, lowerlr.Pitch);
 		else
@@ -319,43 +303,12 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 			format = D3DFMT_R5G6B5;
 	}
 
-	if(image->getColorFormat() == ECF_DXT1 || image->getColorFormat() == ECF_DXT2 || image->getColorFormat() == ECF_DXT3 || image->getColorFormat() == ECF_DXT4 || image->getColorFormat() == ECF_DXT5)
-	{
-		ColorFormat = image->getColorFormat();
-
-		switch(ColorFormat)
-		{
-			case ECF_DXT1:
-				format = D3DFMT_DXT1;
-				break;
-			case ECF_DXT2:
-				format = D3DFMT_DXT2;
-				break;
-			case ECF_DXT3:
-				format = D3DFMT_DXT3;
-				break;
-			case ECF_DXT4:
-				format = D3DFMT_DXT4;
-				break;
-			case ECF_DXT5:
-				format = D3DFMT_DXT5;
-				break;
-			default:
-				break;
-		}
-
-		IsCompressed = true;
-	}
-
-	bool mipmaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
-
-	if (IsCompressed && !image->hasMipMaps())
-		mipmaps = false;
+	const bool mipmaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	DWORD usage = 0;
 
 	// This enables hardware mip map generation.
-	if (!IsCompressed && mipmaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+	if (mipmaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 	{
 		LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
 		D3DDISPLAYMODE d3ddm;
@@ -373,7 +326,7 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 		usage, // usage
 		format, D3DPOOL_MANAGED , &Texture, NULL);
 
-	if (!IsCompressed && FAILED(hr))
+	if (FAILED(hr))
 	{
 		// try brute force 16 bit
 		HardwareMipMaps = false;
@@ -389,11 +342,8 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 			0, format, D3DPOOL_MANAGED, &Texture, NULL);
 	}
 
-	if (!IsCompressed)
-		ColorFormat = Driver->getColorFormatFromD3DFormat(format);
-
+	ColorFormat = Driver->getColorFormatFromD3DFormat(format);
 	setPitch(format);
-
 	return (SUCCEEDED(hr));
 }
 
@@ -417,16 +367,8 @@ bool CD3D9Texture::copyTexture(IImage * image)
 			return false;
 		}
 
-		if (IsCompressed)
-		{
-			u32 compressedDataSize = IImage::getCompressedImageSize(ColorFormat, TextureSize.Width, TextureSize.Height);
-			memcpy(rect.pBits, image->lock(), compressedDataSize);
-		}
-		else
-		{
-			Pitch = rect.Pitch;
-			image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
-		}
+		Pitch = rect.Pitch;
+		image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
 
 		hr = Texture->UnlockRect(0);
 		if (FAILED(hr))
@@ -443,9 +385,6 @@ bool CD3D9Texture::copyTexture(IImage * image)
 //! lock function
 void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 {
-	if (IsCompressed) // TO-DO
-		return 0;
-
 	if (!Texture)
 		return 0;
 
@@ -504,9 +443,6 @@ void* CD3D9Texture::lock(E_TEXTURE_LOCK_MODE mode, u32 mipmapLevel)
 //! unlock function
 void CD3D9Texture::unlock()
 {
-	if (IsCompressed) // TO-DO
-		return;
-
 	if (!Texture)
 		return;
 
@@ -567,22 +503,19 @@ bool CD3D9Texture::hasMipMaps() const
 
 
 void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
-				   const s32 srcWidth, const s32 srcHeight,
-				   const s32 width, const s32 height,
-				   const s32 pitchsrc, const s32 pitchtgt) const
+				   s32 width, s32 height,
+				   s32 pitchsrc, s32 pitchtgt) const
 {
-	const s32 dy_max = (srcHeight==1?1:2);
-	const s32 dx_max = (srcWidth==1?1:2);
-	const s32 blockcount= dx_max*dy_max;
 	for (s32 y=0; y<height; ++y)
 	{
 		for (s32 x=0; x<width; ++x)
 		{
 			u32 a=0, r=0, g=0, b=0;
-			for (s32 dy=0; dy<dy_max; ++dy)
+
+			for (s32 dy=0; dy<2; ++dy)
 			{
 				const s32 tgy = (y*2)+dy;
-				for (s32 dx=0; dx<dx_max; ++dx)
+				for (s32 dx=0; dx<2; ++dx)
 				{
 					const s32 tgx = (x*2)+dx;
 
@@ -599,10 +532,10 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 				}
 			}
 
-			a /= blockcount;
-			r /= blockcount;
-			g /= blockcount;
-			b /= blockcount;
+			a /= 4;
+			r /= 4;
+			g /= 4;
+			b /= 4;
 
 			u16 c;
 			if (ColorFormat == ECF_A1R5G5B5)
@@ -616,13 +549,9 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 
 
 void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
-				   const s32 srcWidth, const s32 srcHeight,
-				   const s32 width, const s32 height,
-				   const s32 pitchsrc, const s32 pitchtgt) const
+				   s32 width, s32 height,
+				   s32 pitchsrc, s32 pitchtgt) const
 {
-	const s32 dy_max = (srcHeight==1?1:2);
-	const s32 dx_max = (srcWidth==1?1:2);
-	const s32 blockcount= dx_max*dy_max;
 	for (s32 y=0; y<height; ++y)
 	{
 		for (s32 x=0; x<width; ++x)
@@ -630,10 +559,10 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 			u32 a=0, r=0, g=0, b=0;
 			SColor c;
 
-			for (s32 dy=0; dy<dy_max; ++dy)
+			for (s32 dy=0; dy<2; ++dy)
 			{
 				const s32 tgy = (y*2)+dy;
-				for (s32 dx=0; dx<dx_max; ++dx)
+				for (s32 dx=0; dx<2; ++dx)
 				{
 					const s32 tgx = (x*2)+dx;
 
@@ -646,10 +575,10 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 				}
 			}
 
-			a /= blockcount;
-			r /= blockcount;
-			g /= blockcount;
-			b /= blockcount;
+			a /= 4;
+			r /= 4;
+			g /= 4;
+			b /= 4;
 
 			c.set(a, r, g, b);
 			*(u32*)(&tgt[(x*4)+(y*pitchtgt)]) = c.color;
@@ -662,15 +591,8 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 //! modifying the texture
 void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 {
-	if (!HasMipMaps)
-		return;
-
-	if (IsCompressed && !mipmapData)
-		return;
-
 	if (mipmapData)
 	{
-		u32 compressedDataSize = 0;
 		core::dimension2du size = TextureSize;
 		u32 level=0;
 		do
@@ -680,7 +602,6 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 			if (size.Height>1)
 				size.Height /=2;
 			++level;
-
 			IDirect3DSurface9* mipSurface = 0;
 			HRESULT hr = Texture->GetSurfaceLevel(level, &mipSurface);
 			if (FAILED(hr) || !mipSurface)
@@ -700,22 +621,8 @@ void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 				return;
 			}
 
-			if (IsCompressed)
-			{
-				if(ColorFormat == ECF_DXT1)
-					compressedDataSize = ((size.Width + 3) / 4) * ((size.Height + 3) / 4) * 8;
-				else if (ColorFormat == ECF_DXT2 || ColorFormat == ECF_DXT3 || ColorFormat == ECF_DXT4 || ColorFormat == ECF_DXT5)
-					compressedDataSize = ((size.Width + 3) / 4) * ((size.Height + 3) / 4) * 16;
-
-				memcpy(miplr.pBits, mipmapData, compressedDataSize);
-				mipmapData = static_cast<u8*>(mipmapData)+compressedDataSize;
-			}
-			else
-			{
-				memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
-				mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
-			}
-
+			memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
+			mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
 			// unlock
 			mipSurface->UnlockRect();
 			// release
@@ -780,14 +687,6 @@ void CD3D9Texture::setPitch(D3DFORMAT d3dformat)
 	case D3DFMT_R8G8B8:
 		Pitch = TextureSize.Width * 3;
 	break;
-	case D3DFMT_DXT1:
-		Pitch = TextureSize.Width * 2;
-	break;
-	case D3DFMT_DXT2:
-	case D3DFMT_DXT3:
-	case D3DFMT_DXT4:
-	case D3DFMT_DXT5:
-		Pitch = TextureSize.Width * 4;
 	default:
 		Pitch = 0;
 	};

@@ -484,7 +484,7 @@ void CBurningVideoDriver::setCurrentShader()
 	ITexture *texture0 = Material.org.getTexture(0);
 	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest =	Material.org.ZBuffer != ECFN_DISABLED &&
+	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER &&
 							Material.org.ZWriteEnable &&
 							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
 
@@ -1746,8 +1746,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 	// These calls would lead to crashes due to wrong index usage.
 	// The vertex cache needs to be rewritten for these primitives.
 	if (pType==scene::EPT_POINTS || pType==scene::EPT_LINE_STRIP ||
-		pType==scene::EPT_LINE_LOOP || pType==scene::EPT_LINES ||
-		pType==scene::EPT_TRIANGLE_FAN || pType==scene::EPT_POLYGON ||
+		pType==scene::EPT_LINE_LOOP || pType==scene::EPT_LINES || pType==scene::EPT_POLYGON ||
 		pType==scene::EPT_POINT_SPRITES)
 		return;
 
@@ -2581,15 +2580,11 @@ IImage* CBurningVideoDriver::createScreenShot(video::ECOLOR_FORMAT format, video
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
 ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	CSoftwareTexture2* texture = 0;
+	return new CSoftwareTexture2(
+		surface, name,
+		(getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
+		(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE ), mipmapData);
 
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-	{
-		texture = new CSoftwareTexture2( surface, name, (getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
-			(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE ), mipmapData);
-	}
-
-	return texture;
 }
 
 

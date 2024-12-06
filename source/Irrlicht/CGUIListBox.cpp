@@ -267,11 +267,11 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 					default:
 						break;
 				}
-				if (Selected >= (s32)Items.size())
-					Selected = Items.size() - 1;
-				else
 				if (Selected<0)
 					Selected = 0;
+				if (Selected >= (s32)Items.size())
+					Selected = Items.size() - 1;	// will set Selected to -1 for empty listboxes which is correct
+				
 
 				recalculateScrollPos();
 
@@ -607,8 +607,8 @@ u32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
 
 void CGUIListBox::setSpriteBank(IGUISpriteBank* bank)
 {
-    if ( bank == IconBank )
-        return;
+	if ( bank == IconBank )
+		return;
 	if (IconBank)
 		IconBank->drop();
 

@@ -695,12 +695,7 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 //! returns a device dependent texture from a software surface (IImage)
 video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const io::path& name, void* mipmapData)
 {
-	CD3D8Texture* texture = 0;
-
-	if (surface && checkColorFormat(surface->getColorFormat(), surface->getDimension()))
-		texture = new CD3D8Texture(surface, this, TextureCreationFlags, name, mipmapData);
-
-	return texture;
+	return new CD3D8Texture(surface, this, TextureCreationFlags, name, mipmapData);
 }
 
 
@@ -797,7 +792,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 		CurrentRendertargetSize = tex->getSize();
 	}
-	Transformation3DChanged = true;
+	Transformation3DChanged = true; 
 
 	if (clearBackBuffer || clearZBuffer)
 	{
@@ -1495,7 +1490,7 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	{
 		switch (material.ZBuffer)
 		{
-		case ECFN_DISABLED:
+		case ECFN_NEVER:
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 			break;
 		case ECFN_LESSEQUAL:
@@ -1525,10 +1520,6 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		case ECFN_ALWAYS:
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
-			break;
-		case ECFN_NEVER:
-			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_NEVER);
 			break;
 		}
 	}
@@ -2170,20 +2161,6 @@ const core::matrix4& CD3D8Driver::getTransform(E_TRANSFORMATION_STATE state) con
 	return Matrices[state];
 }
 
-//! Get a vertex shader constant index.
-s32 CD3D8Driver::getVertexShaderConstantID(const c8* name)
-{
-	os::Printer::log("Cannot get constant index, no HLSL supported in D3D8");
-	return -1;
-}
-
-//! Get a pixel shader constant index.
-s32 CD3D8Driver::getPixelShaderConstantID(const c8* name)
-{
-	os::Printer::log("Cannot get constant index, no HLSL supported in D3D8");
-	return -1;
-}
-
 
 //! Sets a vertex shader constant.
 void CD3D8Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
@@ -2201,8 +2178,16 @@ void CD3D8Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32
 }
 
 
-//! Sets a constant for the vertex shader based on an index.
-bool CD3D8Driver::setVertexShaderConstant(s32 index, const f32* floats, int count)
+//! Sets a constant for the vertex shader based on a name.
+bool CD3D8Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
+{
+	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
+	return false;
+}
+
+
+//! Bool interface for the above.
+bool CD3D8Driver::setVertexShaderConstant(const c8* name, const bool* bools, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;
@@ -2210,15 +2195,23 @@ bool CD3D8Driver::setVertexShaderConstant(s32 index, const f32* floats, int coun
 
 
 //! Int interface for the above.
-bool CD3D8Driver::setVertexShaderConstant(s32 index, const s32* ints, int count)
+bool CD3D8Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;
 }
 
 
-//! Sets a constant for the pixel shader based on an index.
-bool CD3D8Driver::setPixelShaderConstant(s32 index, const f32* floats, int count)
+//! Sets a constant for the pixel shader based on a name.
+bool CD3D8Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
+{
+	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
+	return false;
+}
+
+
+//! Bool interface for the above.
+bool CD3D8Driver::setPixelShaderConstant(const c8* name, const bool* bools, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;
@@ -2226,7 +2219,7 @@ bool CD3D8Driver::setPixelShaderConstant(s32 index, const f32* floats, int count
 
 
 //! Int interface for the above.
-bool CD3D8Driver::setPixelShaderConstant(s32 index, const s32* ints, int count)
+bool CD3D8Driver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;

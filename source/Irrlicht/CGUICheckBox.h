@@ -23,44 +23,28 @@ namespace gui
 		CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
 		//! set if box is checked
-		virtual void setChecked(bool checked) _IRR_OVERRIDE_;
+		virtual void setChecked(bool checked);
 
 		//! returns if box is checked
-		virtual bool isChecked() const _IRR_OVERRIDE_;
-
-		//! Sets whether to draw the background
-		virtual void setDrawBackground(bool draw) _IRR_OVERRIDE_;
-
-		//! Checks if background drawing is enabled
-		/** \return true if background drawing is enabled, false otherwise */
-		virtual bool isDrawBackgroundEnabled() const _IRR_OVERRIDE_;
-
-		//! Sets whether to draw the border
-		virtual void setDrawBorder(bool draw) _IRR_OVERRIDE_;
-
-		//! Checks if border drawing is enabled
-		/** \return true if border drawing is enabled, false otherwise */
-		virtual bool isDrawBorderEnabled() const _IRR_OVERRIDE_;
+		virtual bool isChecked() const;
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event) _IRR_OVERRIDE_;
+		virtual bool OnEvent(const SEvent& event);
 
 		//! draws the element and its children
-		virtual void draw() _IRR_OVERRIDE_;
+		virtual void draw();
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 	private:
 
-		u32 CheckTime;
+		u32 checkTime;
 		bool Pressed;
 		bool Checked;
-		bool Border;
-		bool Background;
 	};
 
 } // end namespace gui

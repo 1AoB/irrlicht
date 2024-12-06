@@ -517,9 +517,6 @@
 				RelativePath="..\..\include\irrlicht.h">
 			</File>
 			<File
-				RelativePath="..\..\include\leakHunter.h">
-			</File>
-			<File
 				RelativePath="..\..\include\IrrlichtDevice.h">
 			</File>
 			<File
@@ -1421,9 +1418,6 @@
 			</File>
 			<File
 				RelativePath=".\os.cpp">
-			</File>
-			<File
-				RelativePath=".\leakHunter.cpp">
 			</File>
 			<File
 				RelativePath=".\os.h">

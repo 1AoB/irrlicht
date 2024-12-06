@@ -22,22 +22,24 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name,
 	setDebugName("CSoftwareTexture");
 	#endif
 
-	OrigSize = image->getDimension();
-	core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
-
-	Image = new CImage(ECF_A1R5G5B5, OrigSize);
-
-	image->copyTo(Image);
-
-	if (optSize == OrigSize)
+	if (image)
 	{
-		Texture = Image;
-		Texture->grab();
-	}
-	else
-	{
-		Texture = new CImage(ECF_A1R5G5B5, optSize);
-		Image->copyToScaling(Texture);
+		OrigSize = image->getDimension();
+		core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
+
+		Image = new CImage(ECF_A1R5G5B5, OrigSize);
+		image->copyTo(Image);
+
+		if (optSize == OrigSize)
+		{
+			Texture = Image;
+			Texture->grab();
+		}
+		else
+		{
+			Texture = new CImage(ECF_A1R5G5B5, optSize);
+			Image->copyToScaling(Texture);
+		}
 	}
 }
 

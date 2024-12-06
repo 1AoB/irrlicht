@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 42;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -584,16 +584,6 @@
 		5DD480CA0C7DA66800728AA9 /* CIrrDeviceSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */; };
 		5DD480CB0C7DA66800728AA9 /* COpenGLExtensionHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480C50C7DA66800728AA9 /* COpenGLExtensionHandler.cpp */; };
 		5DD480CC0C7DA66800728AA9 /* CMD3MeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480C60C7DA66800728AA9 /* CMD3MeshFileLoader.cpp */; };
-		5E25C81C16A83DC700320AA9 /* leakHunter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C81B16A83DC700320AA9 /* leakHunter.cpp */; };
-		5E25C81F16A83E4500320AA9 /* leakHunter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E25C81E16A83E4500320AA9 /* leakHunter.h */; };
-		5E25C82216A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */; };
-		5E25C82316A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */; };
-		5E5484EC168A959900119951 /* CCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */; };
-		5E5484ED168A959900119951 /* CCgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5484EB168A959900119951 /* CCgMaterialRenderer.h */; };
-		5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */; };
-		5E5484F2168A95D500119951 /* COpenGLCgMaterialRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5484F0168A95D500119951 /* COpenGLCgMaterialRenderer.h */; };
-		5E5687451719AE69007C0D05 /* CImageLoaderDDS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5E5687431719AE69007C0D05 /* CImageLoaderDDS.cpp */; };
-		5E5687461719AE69007C0D05 /* CImageLoaderDDS.h in Headers */ = {isa = PBXBuildFile; fileRef = 5E5687441719AE69007C0D05 /* CImageLoaderDDS.h */; };
 		95154774133CD9DA008D792F /* aabbox3d.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CFA7C0A0A88742800B03626 /* aabbox3d.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		95154775133CD9DA008D792F /* CMeshBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0910B9FD0D1F64B300D46B04 /* CMeshBuffer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		95154776133CD9DA008D792F /* coreutil.h in Headers */ = {isa = PBXBuildFile; fileRef = 0910B9FE0D1F64B300D46B04 /* coreutil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2087,16 +2077,6 @@
 		5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceSDL.cpp; sourceTree = "<group>"; };
 		5DD480C50C7DA66800728AA9 /* COpenGLExtensionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLExtensionHandler.cpp; sourceTree = "<group>"; };
 		5DD480C60C7DA66800728AA9 /* CMD3MeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMD3MeshFileLoader.cpp; sourceTree = "<group>"; };
-		5E25C81B16A83DC700320AA9 /* leakHunter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = leakHunter.cpp; sourceTree = "<group>"; };
-		5E25C81E16A83E4500320AA9 /* leakHunter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = leakHunter.h; sourceTree = "<group>"; };
-		5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CD3D9CgMaterialRenderer.cpp; sourceTree = "<group>"; };
-		5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CD3D9CgMaterialRenderer.h; sourceTree = "<group>"; };
-		5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCgMaterialRenderer.cpp; sourceTree = "<group>"; };
-		5E5484EB168A959900119951 /* CCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCgMaterialRenderer.h; sourceTree = "<group>"; };
-		5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = COpenGLCgMaterialRenderer.cpp; sourceTree = "<group>"; };
-		5E5484F0168A95D500119951 /* COpenGLCgMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = COpenGLCgMaterialRenderer.h; sourceTree = "<group>"; };
-		5E5687431719AE69007C0D05 /* CImageLoaderDDS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CImageLoaderDDS.cpp; sourceTree = "<group>"; };
-		5E5687441719AE69007C0D05 /* CImageLoaderDDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImageLoaderDDS.h; sourceTree = "<group>"; };
 		959726FD12C18FFC00BF73D3 /* IrrFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IrrFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		959726FE12C18FFC00BF73D3 /* irrFramework-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "irrFramework-Info.plist"; sourceTree = "<group>"; };
 		95972B8312C19A5C00BF73D3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -2667,7 +2647,6 @@
 				4C53DF990A484C240014E966 /* COSOperator.cpp */,
 				4C53DF9A0A484C240014E966 /* COSOperator.h */,
 				4C53DFD00A484C240014E966 /* CTimer.h */,
-				5E25C81B16A83DC700320AA9 /* leakHunter.cpp */,
 				4C53E00A0A484C250014E966 /* Irrlicht.cpp */,
 				4C53E16A0A484C2C0014E966 /* os.cpp */,
 				4C53E16B0A484C2C0014E966 /* os.h */,
@@ -2905,8 +2884,6 @@
 				0910BA8F0D1F731900D46B04 /* Null */,
 				0910BA910D1F738100D46B04 /* OpenGL */,
 				0910BA920D1F73CC00D46B04 /* Software */,
-				5E5484EA168A959800119951 /* CCgMaterialRenderer.cpp */,
-				5E5484EB168A959900119951 /* CCgMaterialRenderer.h */,
 				4C53DFEE0A484C250014E966 /* CVideoModeList.cpp */,
 				4C53DFEF0A484C250014E966 /* CVideoModeList.h */,
 			);
@@ -2953,8 +2930,6 @@
 		0910BA8E0D1F72FB00D46B04 /* Direct3D9 */ = {
 			isa = PBXGroup;
 			children = (
-				5E25C82016A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp */,
-				5E25C82116A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h */,
 				4C53DF0D0A484C230014E966 /* CD3D9Driver.cpp */,
 				4C53DF0E0A484C230014E966 /* CD3D9Driver.h */,
 				4C53DF0F0A484C230014E966 /* CD3D9HLSLMaterialRenderer.cpp */,
@@ -3014,10 +2989,8 @@
 		0910BA910D1F738100D46B04 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
-				4C53E0070A484C250014E966 /* glext.h */,
 				5DD480700C7D94AC00728AA9 /* glxext.h */,
-				5E5484EF168A95D500119951 /* COpenGLCgMaterialRenderer.cpp */,
-				5E5484F0168A95D500119951 /* COpenGLCgMaterialRenderer.h */,
+				4C53E0070A484C250014E966 /* glext.h */,
 				5DD480C10C7DA66800728AA9 /* COpenGLExtensionHandler.h */,
 				5DD480C50C7DA66800728AA9 /* COpenGLExtensionHandler.cpp */,
 				4C53DF8C0A484C240014E966 /* COpenGLDriver.cpp */,
@@ -3217,8 +3190,6 @@
 			children = (
 				4CFA7BDC0A88735900B03626 /* CImageLoaderBMP.cpp */,
 				4CFA7BDD0A88735900B03626 /* CImageLoaderBMP.h */,
-				5E5687431719AE69007C0D05 /* CImageLoaderDDS.cpp */,
-				5E5687441719AE69007C0D05 /* CImageLoaderDDS.h */,
 				4C53DF5C0A484C230014E966 /* CImageLoaderJPG.cpp */,
 				4C53DF5D0A484C230014E966 /* CImageLoaderJPG.h */,
 				4C53DF5E0A484C230014E966 /* CImageLoaderPCX.cpp */,
@@ -3229,8 +3200,8 @@
 				096840280D0F1A2300333EFD /* CImageLoaderPPM.h */,
 				4C53DF620A484C230014E966 /* CImageLoaderPSD.cpp */,
 				4C53DF630A484C230014E966 /* CImageLoaderPSD.h */,
-				34EF91D10F65FCA6000B5651 /* CImageLoaderRGB.cpp */,
 				34EF91D00F65FCA6000B5651 /* CImageLoaderRGB.h */,
+				34EF91D10F65FCA6000B5651 /* CImageLoaderRGB.cpp */,
 				4C53DF640A484C230014E966 /* CImageLoaderTGA.cpp */,
 				4C53DF650A484C230014E966 /* CImageLoaderTGA.h */,
 				0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */,
@@ -3601,6 +3572,7 @@
 			children = (
 				4C53E14C0A484C2C0014E966 /* AppDelegate.h */,
 				4C53E14D0A484C2C0014E966 /* AppDelegate.mm */,
+				4C53E14E0A484C2C0014E966 /* build */,
 				4C53E15E0A484C2C0014E966 /* CIrrDeviceMacOSX.h */,
 				4C53E15F0A484C2C0014E966 /* CIrrDeviceMacOSX.mm */,
 				4C53E1640A484C2C0014E966 /* MacOSX_Prefix.pch */,
@@ -3609,6 +3581,37 @@
 				4C53E1670A484C2C0014E966 /* OSXClipboard.mm */,
 			);
 			path = MacOSX;
+			sourceTree = "<group>";
+		};
+		4C53E14E0A484C2C0014E966 /* build */ = {
+			isa = PBXGroup;
+			children = (
+				4C53E14F0A484C2C0014E966 /* MacOSX.build */,
+			);
+			path = build;
+			sourceTree = "<group>";
+		};
+		4C53E14F0A484C2C0014E966 /* MacOSX.build */ = {
+			isa = PBXGroup;
+			children = (
+				4C53E1500A484C2C0014E966 /* MacOSX.pbxindex */,
+			);
+			path = MacOSX.build;
+			sourceTree = "<group>";
+		};
+		4C53E1500A484C2C0014E966 /* MacOSX.pbxindex */ = {
+			isa = PBXGroup;
+			children = (
+				4C53E1590A484C2C0014E966 /* strings.pbxstrings */,
+			);
+			path = MacOSX.pbxindex;
+			sourceTree = "<group>";
+		};
+		4C53E1590A484C2C0014E966 /* strings.pbxstrings */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = strings.pbxstrings;
 			sourceTree = "<group>";
 		};
 		4C53E1710A484C2C0014E966 /* zlib */ = {
@@ -3702,7 +3705,6 @@
 				4CFA7C4A0A88742900B03626 /* IrrCompileConfig.h */,
 				4CFA7C4B0A88742900B03626 /* irrlicht.h */,
 				4CFA7C4C0A88742900B03626 /* IrrlichtDevice.h */,
-				5E25C81E16A83E4500320AA9 /* leakHunter.h */,
 				4CFA7C740A88742900B03626 /* SIrrCreationParameters.h */,
 			);
 			name = include;
@@ -3971,11 +3973,6 @@
 				0E2E3C5C1103B2AE002DE8D7 /* CIrrDeviceFB.h in Headers */,
 				0E2E3C5E1103B2AE002DE8D7 /* CIrrDeviceWinCE.h in Headers */,
 				95E5857812FCE2CB004946C6 /* CAnimatedMeshHalfLife.h in Headers */,
-				5E5484ED168A959900119951 /* CCgMaterialRenderer.h in Headers */,
-				5E5484F2168A95D500119951 /* COpenGLCgMaterialRenderer.h in Headers */,
-				5E25C81F16A83E4500320AA9 /* leakHunter.h in Headers */,
-				5E25C82316A83E7A00320AA9 /* CD3D9CgMaterialRenderer.h in Headers */,
-				5E5687461719AE69007C0D05 /* CImageLoaderDDS.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4385,8 +4382,7 @@
 			attributes = {
 			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "MacOSX" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -5392,11 +5388,6 @@
 				95E5858D12FCE388004946C6 /* CTRNormalMap.cpp in Sources */,
 				95E5859212FCE3A1004946C6 /* CTRStencilShadow.cpp in Sources */,
 				95E5859512FCE3F5004946C6 /* CSMFMeshFileLoader.cpp in Sources */,
-				5E5484EC168A959900119951 /* CCgMaterialRenderer.cpp in Sources */,
-				5E5484F1168A95D500119951 /* COpenGLCgMaterialRenderer.cpp in Sources */,
-				5E25C81C16A83DC700320AA9 /* leakHunter.cpp in Sources */,
-				5E25C82216A83E7A00320AA9 /* CD3D9CgMaterialRenderer.cpp in Sources */,
-				5E5687451719AE69007C0D05 /* CImageLoaderDDS.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5609,11 +5600,11 @@
 		09022C600EA0E97F00CD54EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5632,6 +5623,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = GUIEditor_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -5641,12 +5633,12 @@
 		09022C610EA0E97F00CD54EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -5665,6 +5657,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = GUIEditor;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -5677,11 +5670,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5695,6 +5688,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = MouseAndJoystick_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -5705,12 +5699,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -5724,6 +5718,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = MouseAndJoystick;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -5735,11 +5730,11 @@
 		09F649010D2CDED9001E0599 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5758,6 +5753,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = HelloWorld_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -5767,12 +5763,12 @@
 		09F649020D2CDED9001E0599 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -5791,6 +5787,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = HelloWorld;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -5802,11 +5799,11 @@
 		09F6493C0D2CE03E001E0599 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5825,6 +5822,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = LoadIrrFile_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -5834,12 +5832,12 @@
 		09F6493D0D2CE03E001E0599 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -5858,6 +5856,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = LoadIrrFile;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -5869,11 +5868,11 @@
 		09F649630D2CE206001E0599 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5892,6 +5891,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Quake3Shader_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -5901,12 +5901,12 @@
 		09F649640D2CE206001E0599 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -5925,6 +5925,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Quake3Shader;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -5937,11 +5938,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5955,6 +5956,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = SplitScreen_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -5965,12 +5967,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -5984,6 +5986,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = SplitScreen;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -5996,11 +5999,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6014,6 +6017,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = ManagedLights_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6024,12 +6028,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6043,6 +6047,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = ManagedLights;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6054,9 +6059,9 @@
 		1DEB921F08733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -6070,7 +6075,6 @@
 		1DEB922008733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6092,6 +6096,7 @@
 					"-DMACOSX",
 					"-D_DEBUG",
 				);
+				PREBINDING = NO;
 				SDKROOT = "";
 			};
 			name = Debug;
@@ -6110,6 +6115,7 @@
 				HEADER_SEARCH_PATHS = ../../../include;
 				INSTALL_MODE_FLAG = "a+rwx";
 				OTHER_CFLAGS = "-DMACOSX";
+				PREBINDING = NO;
 				SDKROOT = "";
 			};
 			name = Release;
@@ -6118,12 +6124,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6144,6 +6150,7 @@
 					"-read_only_relocs",
 					suppress,
 				);
+				PREBINDING = NO;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = IrrFramework;
 				SHARED_PRECOMPS_DIR = "";
@@ -6154,13 +6161,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6180,6 +6187,7 @@
 					"-read_only_relocs",
 					suppress,
 				);
+				PREBINDING = NO;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				PRODUCT_NAME = IrrFramework;
 				SHARED_PRECOMPS_DIR = "";
@@ -6190,11 +6198,11 @@
 		B81CFE0D097FD9F50057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6208,6 +6216,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = 2DGraphics_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6217,12 +6226,12 @@
 		B81CFE0E097FD9F50057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6236,6 +6245,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = 2DGraphics;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6247,11 +6257,11 @@
 		B81CFE8E097FDDE20057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6265,6 +6275,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Collision_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6274,12 +6285,12 @@
 		B81CFE8F097FDDE20057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6293,6 +6304,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Collision;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6304,11 +6316,11 @@
 		B81CFEB0097FDE900057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6322,6 +6334,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = PerPixelLighting_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6331,12 +6344,12 @@
 		B81CFEB1097FDE900057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6351,6 +6364,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = PerPixelLighting;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6362,11 +6376,11 @@
 		B81CFECE097FDF020057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6380,6 +6394,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = TerrainRendering_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6389,12 +6404,12 @@
 		B81CFECF097FDF020057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6408,6 +6423,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = TerrainRendering;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6419,11 +6435,11 @@
 		B81CFEF4097FE05F0057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6437,6 +6453,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = SpecialFx_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6446,12 +6463,12 @@
 		B81CFEF5097FE05F0057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6465,6 +6482,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = SpecialFx;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6476,11 +6494,11 @@
 		B81CFF13097FE13E0057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6494,6 +6512,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = UserInterface_dbg;
 				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
@@ -6504,12 +6523,12 @@
 		B81CFF14097FE13E0057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6523,6 +6542,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = UserInterface;
 				SDKROOT = "";
 				SEPARATE_STRIP = YES;
@@ -6535,11 +6555,11 @@
 		B81CFF2A097FE1E00057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6553,6 +6573,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = CustomSceneNode_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6562,12 +6583,12 @@
 		B81CFF2B097FE1E00057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6581,6 +6602,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = CustomSceneNode;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6593,11 +6615,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6616,6 +6638,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Quake3Map_dbg;
 				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
@@ -6627,12 +6650,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6651,6 +6674,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Quake3Map;
 				SDKROOT = "";
 				SEPARATE_STRIP = YES;
@@ -6663,11 +6687,11 @@
 		B81CFF56097FE3050057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6681,6 +6705,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Shaders_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6690,12 +6715,12 @@
 		B81CFF57097FE3050057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6709,6 +6734,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Shaders;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6721,11 +6747,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6739,6 +6765,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Movement_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6749,12 +6776,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6768,6 +6795,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Movement;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6780,11 +6808,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6798,6 +6826,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = MeshViewer_dbg;
 				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
@@ -6809,12 +6838,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6828,6 +6857,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = MeshViewer;
 				SDKROOT = "";
 				SEPARATE_STRIP = YES;
@@ -6840,11 +6870,11 @@
 		B81CFFBB097FE5F80057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6858,6 +6888,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = RenderToTexture_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6867,12 +6898,12 @@
 		B81CFFBC097FE5F80057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6886,6 +6917,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = RenderToTexture;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -6897,7 +6929,6 @@
 		B81CFFE9097FE9C30057C06F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -6909,8 +6940,8 @@
 		B81CFFEA097FE9C30057C06F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				PRODUCT_NAME = ALL;
 				ZERO_LINK = NO;
@@ -6920,11 +6951,11 @@
 		B8DEF3610950229300FDEA7E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -6938,6 +6969,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Demo_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -6947,12 +6979,12 @@
 		B8DEF3620950229300FDEA7E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
@@ -6966,6 +6998,7 @@
 					"-framework",
 					AppKit,
 				);
+				PREBINDING = NO;
 				PRODUCT_NAME = Demo;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;

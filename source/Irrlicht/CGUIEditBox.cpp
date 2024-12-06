@@ -34,7 +34,7 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
 	: IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
 	Border(border), Background(true), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
 	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
-	Operator(0), BlinkStartTime(0), CursorBlinkTime(350), CursorChar(L"_"), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
+	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
 	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
 	PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
 	CurrentTextRect(0,0,1,1), FrameRect(rectangle)
@@ -127,22 +127,10 @@ void CGUIEditBox::setDrawBorder(bool border)
 	Border = border;
 }
 
-//! Checks if border drawing is enabled
-bool CGUIEditBox::isDrawBorderEnabled() const
-{
-	return Border;
-}
-
 //! Sets whether to draw the background
 void CGUIEditBox::setDrawBackground(bool draw)
 {
 	Background = draw;
-}
-
-//! Checks if background drawing is enabled
-bool CGUIEditBox::isDrawBackgroundEnabled() const
-{
-	return Background;
 }
 
 //! Sets if the text should use the overide color or the color in the gui skin.
@@ -190,6 +178,7 @@ bool CGUIEditBox::isWordWrapEnabled() const
 void CGUIEditBox::setMultiLine(bool enable)
 {
 	MultiLine = enable;
+	breakText();
 }
 
 
@@ -344,17 +333,25 @@ bool CGUIEditBox::processKey(const SEvent& event)
 				const c8* p = Operator->getTextFromClipboard();
 				if (p)
 				{
+					// TODO: we should have such a function in core::string
+					size_t lenOld = strlen(p);
+					wchar_t *ws = new wchar_t[lenOld + 1];
+					size_t len = mbstowcs(ws,p,lenOld);
+					ws[len] = 0;
+					irr::core::stringw widep(ws);
+					delete[] ws;
+
 					if (MarkBegin == MarkEnd)
 					{
 						// insert text
 						core::stringw s = Text.subString(0, CursorPos);
-						s.append(p);
+						s.append(widep);
 						s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
 
 						if (!Max || s.size()<=Max) // thx to Fish FH for fix
 						{
 							Text = s;
-							s = p;
+							s = widep;
 							CursorPos += s.size();
 						}
 					}
@@ -363,13 +360,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 						// replace text
 
 						core::stringw s = Text.subString(0, realmbgn);
-						s.append(p);
+						s.append(widep);
 						s.append( Text.subString(realmend, Text.size()-realmend) );
 
 						if (!Max || s.size()<=Max)  // thx to Fish FH for fix
 						{
 							Text = s;
-							s = p;
+							s = widep;
 							CursorPos = realmbgn + s.size();
 						}
 					}
@@ -896,14 +893,14 @@ void CGUIEditBox::draw()
 			}
 			s = txtLine->subString(0,CursorPos-startPos);
 			charcursorpos = font->getDimension(s.c_str()).Width +
-				font->getKerningWidth(CursorChar.c_str(), CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
+				font->getKerningWidth(L"_", CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
 
-			if (focus && (CursorBlinkTime == 0 || (os::Timer::getTime() - BlinkStartTime) % (2*CursorBlinkTime) < CursorBlinkTime))
+			if (focus && (os::Timer::getTime() - BlinkStartTime) % 700 < 350)
 			{
 				setTextRect(cursorLine);
 				CurrentTextRect.UpperLeftCorner.X += charcursorpos;
 
-				font->draw(CursorChar, CurrentTextRect,
+				font->draw(L"_", CurrentTextRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 			}
@@ -981,30 +978,6 @@ u32 CGUIEditBox::getMax() const
 	return Max;
 }
 
-//! Set the character used for the cursor.
-/** By default it's "_" */
-void CGUIEditBox::setCursorChar(const wchar_t cursorChar)
-{
-	CursorChar[0] = cursorChar;
-}
-
-//! Get the character used for the cursor.
-wchar_t CGUIEditBox::getCursorChar() const
-{
-	return CursorChar[0];
-}
-
-//! Set the blinktime for the cursor. 2x blinktime is one full cycle.
-void CGUIEditBox::setCursorBlinkTime(irr::u32 timeMs)
-{
-	CursorBlinkTime = timeMs;
-}
-
-//! Get the cursor blinktime
-irr::u32 CGUIEditBox::getCursorBlinkTime() const
-{
-	return CursorBlinkTime;
-}
 
 bool CGUIEditBox::processMouse(const SEvent& event)
 {
@@ -1035,7 +1008,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 		}
 		break;
 	case EMIE_LMOUSE_PRESSED_DOWN:
-		if (!Environment->hasFocus(this))	// can happen when events are manually send to the element
+		if (!Environment->hasFocus(this))
 		{
 			BlinkStartTime = os::Timer::getTime();
 			MouseMarking = true;
@@ -1394,7 +1367,7 @@ void CGUIEditBox::calculateScrollPos()
 			return;
 
 		// get cursor area
-		irr::u32 cursorWidth = font->getDimension(CursorChar.c_str()).Width;
+		irr::u32 cursorWidth = font->getDimension(L"_").Width;
 		core::stringw *txtLine = hasBrokenText ? &BrokenText[cursLine] : &Text;
 		s32 cPos = hasBrokenText ? CursorPos - BrokenTextPositions[cursLine] : CursorPos;	// column
 		s32 cStart = font->getDimension(txtLine->subString(0, cPos).c_str()).Width;		// pixels from text-start

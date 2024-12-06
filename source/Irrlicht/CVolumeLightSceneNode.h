@@ -29,43 +29,43 @@ namespace scene
 
 		virtual ~CVolumeLightSceneNode();
 
-		virtual void OnRegisterSceneNode() _IRR_OVERRIDE_;
+		virtual void OnRegisterSceneNode();
 
 		//! renders the node.
-		virtual void render() _IRR_OVERRIDE_;
+		virtual void render();
 
 		//! returns the axis aligned bounding box of this node
-		virtual const core::aabbox3d<f32>& getBoundingBox() const _IRR_OVERRIDE_;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		//! returns the material based on the zero based index i.
-		virtual video::SMaterial& getMaterial(u32 i) _IRR_OVERRIDE_;
+		virtual video::SMaterial& getMaterial(u32 i);
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount() const _IRR_OVERRIDE_;
+		virtual u32 getMaterialCount() const;
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const _IRR_OVERRIDE_ { return ESNT_VOLUME_LIGHT; }
+		virtual ESCENE_NODE_TYPE getType() const { return ESNT_VOLUME_LIGHT; }
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const _IRR_OVERRIDE_;
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the scene node.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) _IRR_OVERRIDE_;
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
 		//! Creates a clone of this scene node and its children.
-		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) _IRR_OVERRIDE_;
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
-		virtual void setSubDivideU(const u32 inU) _IRR_OVERRIDE_;
-		virtual void setSubDivideV(const u32 inV) _IRR_OVERRIDE_;
+		virtual void setSubDivideU(const u32 inU);
+		virtual void setSubDivideV(const u32 inV);
 
-		virtual u32 getSubDivideU() const _IRR_OVERRIDE_ { return SubdivideU; }
-		virtual u32 getSubDivideV() const _IRR_OVERRIDE_ { return SubdivideV; }
+		virtual u32 getSubDivideU() const { return SubdivideU; }
+		virtual u32 getSubDivideV() const { return SubdivideV; }
 
-		virtual void setFootColor(const video::SColor inColor) _IRR_OVERRIDE_;
-		virtual void setTailColor(const video::SColor inColor) _IRR_OVERRIDE_;
+		virtual void setFootColor(const video::SColor inColor);
+		virtual void setTailColor(const video::SColor inColor);
 
-		virtual video::SColor getFootColor() const _IRR_OVERRIDE_ { return FootColor; }
-		virtual video::SColor getTailColor() const _IRR_OVERRIDE_ { return TailColor; }
+		virtual video::SColor getFootColor() const { return FootColor; }
+		virtual video::SColor getTailColor() const { return TailColor; }
 
 	private:
 		void constructLight();
@@ -82,10 +82,8 @@ namespace scene
 		video::SColor FootColor;	// Color at the source
 		video::SColor TailColor;	// Color at the end.
 
-		// LightDimensions.Y Distance of shooting -- Length of beams
-		// LightDimensions.X and LightDimensions.Z determine the
-		// size/dimension of the plane
-		core::vector3df LightDimensions;
+		core::vector3df LightDimensions; // LightDimensions.Y Distance of shooting -- Length of beams
+										 // LightDimensions.X and LightDimensions.Z determine the size/dimension of the plane
 	};
 
 } // end namespace scene

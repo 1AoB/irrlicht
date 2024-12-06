@@ -20,10 +20,7 @@
 #include "COSOperator.h"
 #include "CColorConverter.h"
 #include "SIrrCreationParameters.h"
-#include "SExposedVideoData.h"
 #include "IGUISpriteBank.h"
-#include "CEGLManager.h"
-#include "CGLXManager.h"
 #include <X11/XKBlib.h>
 #include <X11/Xatom.h>
 
@@ -35,7 +32,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#ifdef __FREE_BSD_
+#ifdef __FreeBSD__
 #include <sys/joystick.h>
 #else
 
@@ -55,30 +52,8 @@ namespace irr
 {
 	namespace video
 	{
-	#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, IContextManager* contextManager);
-	#endif
-
-	#ifdef _IRR_COMPILE_WITH_OGLES1_
-        IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
-#endif
-	);
-        #endif 	 
-
-	#ifdef _IRR_COMPILE_WITH_OGLES2_
-	IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params, io::IFileSystem* io
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_ANDROID_DEVICE_)
-        , IContextManager* contextManager
-#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-        , CIrrDeviceIPhone* device
-#endif
-	);
-	#endif
+		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+				io::IFileSystem* io, CIrrDeviceLinux* device);
 	}
 } // end namespace irr
 
@@ -93,17 +68,21 @@ namespace
 namespace irr
 {
 
-const char wmDeleteWindow[] = "WM_DELETE_WINDOW";
+const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 
 //! constructor
 CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param),
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+	glxWin(0),
+	Context(0),
+#endif
 #endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	WindowHasFocus(false), WindowMinimized(false),
-	UseXVidMode(false), UseXRandR(false),
+	UseXVidMode(false), UseXRandR(false), UseGLXWindow(false),
 	ExternalWindow(false), AutorepeatSupport(0)
 {
 	#ifdef _DEBUG
@@ -144,8 +123,10 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	// create driver
 	createDriver();
 
-	if (VideoDriver)
-		createGUIAndScene();
+	if (!VideoDriver)
+		return;
+
+	createGUIAndScene();
 }
 
 
@@ -181,11 +162,24 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 
 	if (display)
 	{
-		if (ContextManager)
+		#ifdef _IRR_COMPILE_WITH_OPENGL_
+		if (Context)
 		{
-			ContextManager->destroyContext();
-			ContextManager->destroySurface();
+			if (glxWin)
+			{
+				if (!glXMakeContextCurrent(display, None, None, NULL))
+					os::Printer::log("Could not release glx context.", ELL_WARNING);
+			}
+			else
+			{
+				if (!glXMakeCurrent(display, None, NULL))
+					os::Printer::log("Could not release glx context.", ELL_WARNING);
+			}
+			glXDestroyContext(display, Context);
+			if (glxWin)
+				glXDestroyWindow(display, glxWin);
 		}
+		#endif // #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 		// Reset fullscreen resolution change
 		switchToFullscreen(true);
@@ -396,19 +390,235 @@ bool CIrrDeviceLinux::createWindow()
 
 	switchToFullscreen();
 
-	// don't use the XVisual with OpenGL, because it ignores all requested
-	// properties of the CreationParams
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+
+	GLXFBConfig glxFBConfig;
+	int major, minor;
+	bool isAvailableGLX=false;
 	if (CreationParams.DriverType==video::EDT_OPENGL)
 	{
-		video::SExposedVideoData data;
-		data.OpenGLLinux.X11Display = display;
-		ContextManager = new video::CGLXManager(CreationParams,data, screennr);
-		visual = ((video::CGLXManager*)ContextManager)->getVisual();
-	}
+		isAvailableGLX=glXQueryExtension(display,&major,&minor);
+		if (isAvailableGLX && glXQueryVersion(display, &major, &minor))
+		{
+#ifdef GLX_VERSION_1_3
+			typedef GLXFBConfig * ( * PFNGLXCHOOSEFBCONFIGPROC) (Display *dpy, int screen, const int *attrib_list, int *nelements);
 
-	if (!visual)
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXChooseFBConfig"));
+#else
+			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig=glXChooseFBConfig;
+#endif
+			if (major==1 && minor>2 && glxChooseFBConfig)
+			{
+				// attribute array for the draw buffer
+				int visualAttrBuffer[] =
+				{
+					GLX_RENDER_TYPE, GLX_RGBA_BIT,
+					GLX_RED_SIZE, 4,
+					GLX_GREEN_SIZE, 4,
+					GLX_BLUE_SIZE, 4,
+					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
+					GLX_DEPTH_SIZE, CreationParams.ZBufferBits, //10,11
+					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
+#if defined(GLX_VERSION_1_4) && defined(GLX_SAMPLE_BUFFERS) // we need to check the extension string!
+					GLX_SAMPLE_BUFFERS, 1,
+					GLX_SAMPLES, CreationParams.AntiAlias, // 18,19
+#elif defined(GLX_ARB_multisample)
+					GLX_SAMPLE_BUFFERS_ARB, 1,
+					GLX_SAMPLES_ARB, CreationParams.AntiAlias, // 18,19
+#elif defined(GLX_SGIS_multisample)
+					GLX_SAMPLE_BUFFERS_SGIS, 1,
+					GLX_SAMPLES_SGIS, CreationParams.AntiAlias, // 18,19
+#endif
+//#ifdef GL_ARB_framebuffer_sRGB
+//					GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB, CreationParams.HandleSRGB,
+//#elif defined(GL_EXT_framebuffer_sRGB)
+//					GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT, CreationParams.HandleSRGB,
+//#endif
+					GLX_STEREO, CreationParams.Stereobuffer?True:False,
+					None
+				};
+
+				GLXFBConfig *configList=0;
+				int nitems=0;
+				if (CreationParams.AntiAlias<2)
+				{
+					visualAttrBuffer[17] = 0;
+					visualAttrBuffer[19] = 0;
+				}
+				// first round with unchanged values
+				{
+					configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+					if (!configList && CreationParams.AntiAlias)
+					{
+						while (!configList && (visualAttrBuffer[19]>1))
+						{
+							visualAttrBuffer[19] -= 1;
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+						}
+						if (!configList)
+						{
+							visualAttrBuffer[17] = 0;
+							visualAttrBuffer[19] = 0;
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							if (configList)
+							{
+								os::Printer::log("No FSAA available.", ELL_WARNING);
+								CreationParams.AntiAlias=0;
+							}
+							else
+							{
+								//reenable multisampling
+								visualAttrBuffer[17] = 1;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
+							}
+						}
+					}
+				}
+				// Next try with flipped stencil buffer value
+				// If the first round was with stencil flag it's now without
+				// Other way round also makes sense because some configs
+				// only have depth buffer combined with stencil buffer
+				if (!configList)
+				{
+					if (CreationParams.Stencilbuffer)
+						os::Printer::log("No stencilbuffer available, disabling stencil shadows.", ELL_WARNING);
+					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
+					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
+
+					configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+					if (!configList && CreationParams.AntiAlias)
+					{
+						while (!configList && (visualAttrBuffer[19]>1))
+						{
+							visualAttrBuffer[19] -= 1;
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+						}
+						if (!configList)
+						{
+							visualAttrBuffer[17] = 0;
+							visualAttrBuffer[19] = 0;
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							if (configList)
+							{
+								os::Printer::log("No FSAA available.", ELL_WARNING);
+								CreationParams.AntiAlias=0;
+							}
+							else
+							{
+								//reenable multisampling
+								visualAttrBuffer[17] = 1;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
+							}
+						}
+					}
+				}
+				// Next try without double buffer
+				if (!configList && CreationParams.Doublebuffer)
+				{
+					os::Printer::log("No doublebuffering available.", ELL_WARNING);
+					CreationParams.Doublebuffer=false;
+					visualAttrBuffer[13] = GLX_DONT_CARE;
+					CreationParams.Stencilbuffer = false;
+					visualAttrBuffer[15]=0;
+					configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+					if (!configList && CreationParams.AntiAlias)
+					{
+						while (!configList && (visualAttrBuffer[19]>1))
+						{
+							visualAttrBuffer[19] -= 1;
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+						}
+						if (!configList)
+						{
+							visualAttrBuffer[17] = 0;
+							visualAttrBuffer[19] = 0;
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							if (configList)
+							{
+								os::Printer::log("No FSAA available.", ELL_WARNING);
+								CreationParams.AntiAlias=0;
+							}
+							else
+							{
+								//reenable multisampling
+								visualAttrBuffer[17] = 1;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
+							}
+						}
+					}
+				}
+				if (configList)
+				{
+					glxFBConfig=configList[0];
+					XFree(configList);
+					UseGLXWindow=true;
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+					typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGPROC) (Display *dpy, GLXFBConfig config);
+					PFNGLXGETVISUALFROMFBCONFIGPROC glxGetVisualFromFBConfig= (PFNGLXGETVISUALFROMFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXGetVisualFromFBConfig"));
+					if (glxGetVisualFromFBConfig)
+						visual = glxGetVisualFromFBConfig(display,glxFBConfig);
+#else
+						visual = glXGetVisualFromFBConfig(display,glxFBConfig);
+#endif
+				}
+			}
+			else
+#endif
+			{
+				// attribute array for the draw buffer
+				int visualAttrBuffer[] =
+				{
+					GLX_RGBA, GLX_USE_GL,
+					GLX_RED_SIZE, 4,
+					GLX_GREEN_SIZE, 4,
+					GLX_BLUE_SIZE, 4,
+					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
+					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0, // 12,13
+					// The following attributes have no flags, but are
+					// either present or not. As a no-op we use
+					// GLX_USE_GL, which is silently ignored by glXChooseVisual
+					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL, // 14
+					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL, // 15
+//#ifdef GL_ARB_framebuffer_sRGB
+//					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB:GLX_USE_GL,
+//#elif defined(GL_EXT_framebuffer_sRGB)
+//					CreationParams.HandleSRGB?GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT:GLX_USE_GL,
+//#endif
+					None
+				};
+
+				visual=glXChooseVisual(display, screennr, visualAttrBuffer);
+				if (!visual)
+				{
+					if (CreationParams.Stencilbuffer)
+						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
+					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
+					visualAttrBuffer[13]=CreationParams.Stencilbuffer?1:0;
+
+					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
+					if (!visual && CreationParams.Doublebuffer)
+					{
+						os::Printer::log("No doublebuffering available.", ELL_WARNING);
+						CreationParams.Doublebuffer=false;
+						visualAttrBuffer[14] = GLX_USE_GL;
+						visual=glXChooseVisual(display, screennr, visualAttrBuffer);
+					}
+				}
+			}
+		}
+		else
+			os::Printer::log("No GLX support available. OpenGL driver will not work.", ELL_WARNING);
+	}
+	// don't use the XVisual with OpenGL, because it ignores all requested
+	// properties of the CreationParams
+	else if (!visual)
+#endif // _IRR_COMPILE_WITH_OPENGL_
+
+	// create visual with standard X methods
 	{
-		// create visual with standard X methods
 		os::Printer::log("Using plain X visual");
 		XVisualInfo visTempl; //Template to hold requested values
 		int visNumber; // Return value of available visuals
@@ -452,27 +662,15 @@ bool CIrrDeviceLinux::createWindow()
 
 	if (!CreationParams.WindowId)
 	{
-		int x = 0;
-		int y = 0;
-
-		if (!CreationParams.Fullscreen)
-		{
-			if (CreationParams.WindowPosition.X > 0)
-				x = CreationParams.WindowPosition.X;
-			if (CreationParams.WindowPosition.Y > 0)
-				y = CreationParams.WindowPosition.Y;
-		}
-
 		// create new Window
 		// Remove window manager decoration in fullscreen
 		attributes.override_redirect = CreationParams.Fullscreen;
 		window = XCreateWindow(display,
 				RootWindow(display, visual->screen),
-				x, y, Width, Height, 0, visual->depth,
+				0, 0, Width, Height, 0, visual->depth,
 				InputOutput, visual->visual,
 				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
 				&attributes);
-
 		XMapRaised(display, window);
 		CreationParams.WindowId = (void*)window;
 		Atom wmDelete;
@@ -514,6 +712,56 @@ bool CIrrDeviceLinux::createWindow()
 	WindowMinimized=false;
 	// Currently broken in X, see Bug ID 2795321
 	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);
+
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+
+	// connect glx context to window
+	Context=0;
+	if (isAvailableGLX && CreationParams.DriverType==video::EDT_OPENGL)
+	{
+	if (UseGLXWindow)
+	{
+		glxWin=glXCreateWindow(display,glxFBConfig,window,NULL);
+		if (glxWin)
+		{
+			// create glx context
+			Context = glXCreateNewContext(display, glxFBConfig, GLX_RGBA_TYPE, NULL, True);
+			if (Context)
+			{
+				if (!glXMakeContextCurrent(display, glxWin, glxWin, Context))
+				{
+					os::Printer::log("Could not make context current.", ELL_WARNING);
+					glXDestroyContext(display, Context);
+				}
+			}
+			else
+			{
+				os::Printer::log("Could not create GLX rendering context.", ELL_WARNING);
+			}
+		}
+		else
+		{
+			os::Printer::log("Could not create GLX window.", ELL_WARNING);
+		}
+	}
+	else
+	{
+		Context = glXCreateContext(display, visual, NULL, True);
+		if (Context)
+		{
+			if (!glXMakeCurrent(display, window, Context))
+			{
+				os::Printer::log("Could not make context current.", ELL_WARNING);
+				glXDestroyContext(display, Context);
+			}
+		}
+		else
+		{
+			os::Printer::log("Could not create GLX rendering context.", ELL_WARNING);
+		}
+	}
+	}
+#endif // _IRR_COMPILE_WITH_OPENGL_
 
 	Window tmp;
 	u32 borderWidth;
@@ -576,45 +824,10 @@ void CIrrDeviceLinux::createDriver()
 
 	case video::EDT_OPENGL:
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		{
-			video::SExposedVideoData data;
-			data.OpenGLLinux.X11Window = window;
-			data.OpenGLLinux.X11Display = display;
-			ContextManager->initialize(CreationParams, data);
-			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, ContextManager);
-		}
+		if (Context)
+			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
 		#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-		#endif
-		break;
-
-	case video::EDT_OGLES1:
-		#ifdef _IRR_COMPILE_WITH_OGLES1_
-		{
-			video::SExposedVideoData data;
-			data.OpenGLLinux.X11Window = window;
-			data.OpenGLLinux.X11Display = display;
-			ContextManager = new video::CEGLManager();
-			ContextManager->initialize(CreationParams, data);
-			VideoDriver = video::createOGLES1Driver(CreationParams, FileSystem, ContextManager);
-		}
-		#else
-		os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
-		#endif
-		break;
-
-	case video::EDT_OGLES2:
-		#ifdef _IRR_COMPILE_WITH_OGLES2_
-		{
-			video::SExposedVideoData data;
-			data.OpenGLLinux.X11Window = window;
-			data.OpenGLLinux.X11Display = display;
-			ContextManager = new video::CEGLManager();
-			ContextManager->initialize(CreationParams, data);
-			VideoDriver = video::createOGLES2Driver(CreationParams, FileSystem, ContextManager);
-		}
-		#else
-		os::Printer::log("No OpenGL-ES2 support compiled in.", ELL_ERROR);
 		#endif
 		break;
 
@@ -1222,13 +1435,6 @@ void CIrrDeviceLinux::restoreWindow()
 #endif
 }
 
-core::position2di CIrrDeviceLinux::getWindowPosition()
-{
-	int wx = 0, wy = 0;
-	Window child;
-	XTranslateCoordinates(display, window, DefaultRootWindow(display), 0, 0, &wx, &wy, &child);
-	return core::position2di(wx, wy);
-}
 
 void CIrrDeviceLinux::createKeyMap()
 {
@@ -1467,7 +1673,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		if (-1 == info.fd)
 			continue;
 
-#ifdef __FREE_BSD_
+#ifdef __FreeBSD__
 		info.axes=2;
 		info.buttons=2;
 #else
@@ -1491,7 +1697,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		returnInfo.Axes = info.axes;
 		returnInfo.Buttons = info.buttons;
 
-#ifndef __FREE_BSD_
+#ifndef __FreeBSD__
 		char name[80];
 		ioctl( info.fd, JSIOCGNAME(80), name);
 		returnInfo.Name = name;
@@ -1526,13 +1732,14 @@ void CIrrDeviceLinux::pollJoysticks()
 	{
 		JoystickInfo & info =  ActiveJoysticks[j];
 
-#ifdef __FREE_BSD_
+#ifdef __FreeBSD__
 		struct joystick js;
-		if (read(info.fd, &js, JS_RETURN) == JS_RETURN)
+		if (read(info.fd, &js, sizeof(js)) == sizeof(js))
 		{
-			info.persistentData.JoystickEvent.ButtonStates = js.buttons; /* should be a two-bit field */
+			info.persistentData.JoystickEvent.ButtonStates = js.b1 | (js.b2 << 1); /* should be a two-bit field */
 			info.persistentData.JoystickEvent.Axis[0] = js.x; /* X axis */
 			info.persistentData.JoystickEvent.Axis[1] = js.y; /* Y axis */
+		}
 #else
 		struct js_event event;
 		while (sizeof(event) == read(info.fd, &event, sizeof(event)))
@@ -1668,7 +1875,7 @@ const c8* CIrrDeviceLinux::getTextFromClipboard() const
 	Clipboard = "";
 	if (ownerWindow != None )
 	{
-		XConvertSelection (display, X_ATOM_CLIPBOARD, XA_STRING, None, ownerWindow, CurrentTime);
+		XConvertSelection (display, X_ATOM_CLIPBOARD, XA_STRING, XA_PRIMARY, ownerWindow, CurrentTime);
 		XFlush (display);
 
 		// check for data
@@ -1677,7 +1884,7 @@ const c8* CIrrDeviceLinux::getTextFromClipboard() const
 		unsigned long numItems, bytesLeft, dummy;
 		unsigned char *data;
 		XGetWindowProperty (display, ownerWindow,
-				XA_STRING, // property name
+				XA_PRIMARY, // property name
 				0, // offset
 				0, // length (we only check for data, so 0)
 				0, // Delete 0==false
@@ -1690,7 +1897,7 @@ const c8* CIrrDeviceLinux::getTextFromClipboard() const
 		if ( bytesLeft > 0 )
 		{
 			// there is some data to get
-			int result = XGetWindowProperty (display, ownerWindow, XA_STRING, 0,
+			int result = XGetWindowProperty (display, ownerWindow, XA_PRIMARY, 0,
 										bytesLeft, 0, AnyPropertyType, &type, &format,
 										&numItems, &dummy, &data);
 			if (result == Success)
@@ -1865,7 +2072,7 @@ Cursor CIrrDeviceLinux::TextureToARGBCursor(irr::video::ITexture * tex, const co
 	u32 bytesLeftGap = sourceRect.UpperLeftCorner.X * bytesPerPixel;
 	u32 bytesRightGap = tex->getPitch() - sourceRect.LowerRightCorner.X * bytesPerPixel;
 	XcursorPixel* target = image->pixels;
-	const u8* data = (const u8*)tex->lock(ETLM_READ_ONLY, 0);
+	const u8* data = (const u8*)tex->lock(video::ETLM_READ_ONLY, 0);
 	data += sourceRect.UpperLeftCorner.Y*tex->getPitch();
 	for ( s32 y = 0; y < sourceRect.getHeight(); ++y )
 	{

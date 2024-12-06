@@ -136,7 +136,7 @@ struct SColladaEffect
 	core::array<core::stringc> Textures;
 	video::SMaterial Mat;
 	// TODO: Parameters looks somewhat lazy workaround, I think we should really read all parameters correct.
-	io::IAttributes * Parameters;
+	io::IAttributes * Parameters;	
 
 	inline bool operator< (const SColladaEffect & other) const
 	{
@@ -187,13 +187,13 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".cob")
-	virtual bool isALoadableFileExtension(const io::path& filename) const _IRR_OVERRIDE_;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
-	virtual IAnimatedMesh* createMesh(io::IReadFile* file) _IRR_OVERRIDE_;
+	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 private:
 

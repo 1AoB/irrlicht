@@ -48,9 +48,9 @@ namespace irr
 namespace gui
 {
 
-const wchar_t IRR_XML_FORMAT_GUI_ENV[]			= L"irr_gui";
-const wchar_t IRR_XML_FORMAT_GUI_ELEMENT[]		= L"element";
-const wchar_t IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE[]	= L"type";
+const wchar_t* IRR_XML_FORMAT_GUI_ENV			= L"irr_gui";
+const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT		= L"element";
+const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE	= L"type";
 
 const io::path CGUIEnvironment::DefaultFontName = "#DefaultFont";
 
@@ -168,8 +168,7 @@ CGUIEnvironment::~CGUIEnvironment()
 
 void CGUIEnvironment::loadBuiltInFont()
 {
-	io::IReadFile* file = FileSystem->createMemoryReadFile(BuiltInFontData,
-				BuiltInFontDataSize, DefaultFontName, false);
+	io::IReadFile* file = io::createMemoryReadFile(BuiltInFontData, BuiltInFontDataSize, DefaultFontName, false);
 
 	CGUIFont* font = new CGUIFont(this, DefaultFontName );
 	if (!font->load(file))
@@ -330,24 +329,11 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 }
 
 
-//! Returns whether the element has focus
-bool CGUIEnvironment::hasFocus(IGUIElement* element, bool checkSubElements) const
+//! Returns if the element has focus
+bool CGUIEnvironment::hasFocus(IGUIElement* element) const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	if (element == Focus)
-		return true;
-
-	if ( !checkSubElements || !element )
-		return false;
-
-	IGUIElement* f = Focus;
-	while ( f && f->isSubElement() )
-	{
-		f = f->getParent();
-		if ( f == element )
-			return true;
-	}
-	return false;
+	return (element == Focus);
 }
 
 

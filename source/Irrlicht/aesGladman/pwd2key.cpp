@@ -35,7 +35,6 @@
 */
 
 #include <memory.h>
-#include <string.h>
 #include "hmac.h"
 
 void derive_key(const unsigned char pwd[],  /* the PASSWORD     */

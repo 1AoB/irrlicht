@@ -50,7 +50,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
-	pGlCompressedTexImage2D(0), pGlCompressedTexSubImage2D(0),
+	pGlCompressedTexImage2D(0),
 	// ARB framebuffer object
 	pGlBindFramebuffer(0), pGlDeleteFramebuffers(0), pGlGenFramebuffers(0),
 	pGlCheckFramebufferStatus(0), pGlFramebufferTexture2D(0),
@@ -473,7 +473,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	// compressed textures
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glCompressedTexImage2D");
-	pGlCompressedTexSubImage2D = (PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC) IRR_OGL_LOAD_EXTENSION("glCompressedTexSubImage2D");
 
 	// ARB FrameBufferObjects
 	pGlBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC) IRR_OGL_LOAD_EXTENSION("glBindFramebuffer");
@@ -788,17 +787,11 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Version>=120) || FeatureAvailable[IRR_EXT_blend_minmax] ||
 			FeatureAvailable[IRR_EXT_blend_subtract] || FeatureAvailable[IRR_EXT_blend_logic_op];
 	case EVDF_TEXTURE_MATRIX:
+#ifdef _IRR_COMPILE_WITH_CG_
+	// available iff. define is present
+	case EVDF_CG:
+#endif
 		return true;
-	case EVDF_TEXTURE_COMPRESSED_DXT:
-		return FeatureAvailable[IRR_EXT_texture_compression_s3tc];
-	case EVDF_TEXTURE_COMPRESSED_PVRTC: // Currently disabled, but in future maybe special extension will be available.
-	case EVDF_TEXTURE_COMPRESSED_PVRTC2:
-	case EVDF_TEXTURE_COMPRESSED_ETC1:
-		return false;
-	case EVDF_TEXTURE_COMPRESSED_ETC2:
-		return FeatureAvailable[IRR_ARB_ES3_compatibility];
-	case EVDF_TEXTURE_CUBE_MAP:
-		return FeatureAvailable[IRR_ARB_texture_cube_map];
 	default:
 		return false;
 	};

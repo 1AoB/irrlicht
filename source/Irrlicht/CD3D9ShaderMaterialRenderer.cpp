@@ -112,8 +112,6 @@ bool CD3D9ShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E
 void CD3D9ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
-	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
-
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexShader)
@@ -137,8 +135,11 @@ void CD3D9ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 			BaseMaterial->OnSetMaterial(material, material, true, services);
 	}
 
+	//let callback know used material
 	if (CallBack)
 		CallBack->OnSetMaterial(material);
+
+	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
 

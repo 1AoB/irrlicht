@@ -92,7 +92,6 @@ namespace
 	const core::stringc instanceMaterialName = "instance_material";
 	const core::stringc instanceLightName =    "instance_light";
 	const core::stringc instanceNodeName =     "instance_node";
-	const core::stringc instanceCameraName =   "instance_camera";
 	const core::stringc bindMaterialName =     "bind_material";
 	const core::stringc extraNodeName =        "extra";
 	const core::stringc techniqueNodeName =    "technique";
@@ -255,7 +254,7 @@ namespace
 			os::Printer::log("COLLADA: Constructing camera instance", Id.c_str(), ELL_DEBUG);
 			#endif
 
-			scene::ICameraSceneNode* c = mgr->addCameraSceneNode(parent, core::vector3df(0,0,0), core::vector3df(0,0,100), -1, false);
+			scene::ICameraSceneNode* c = mgr->addCameraSceneNode(parent);
 			if (c)
 			{
 				c->setFOV(YFov);
@@ -790,9 +789,7 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 			if ((instanceName == reader->getNodeName()) ||
 				(instanceNodeName == reader->getNodeName()) ||
 				(instanceGeometryName == reader->getNodeName()) ||
-				(instanceLightName == reader->getNodeName()) ||
-				(instanceCameraName == reader->getNodeName())
-				)
+				(instanceLightName == reader->getNodeName()))
 			{
 				scene::ISceneNode* newnode = 0;
 				readInstanceNode(reader, parent, &newnode, nodeprefab, reader->getNodeName());
@@ -1563,7 +1560,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	idx = effect->Parameters->findAttribute(wraptName.c_str());
 	if ( idx >= 0 )
 		twv = (video::E_TEXTURE_CLAMP)(effect->Parameters->getAttributeAsInt(idx));
-
+	
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
 		effect->Mat.TextureLayer[i].TextureWrapU = twu;

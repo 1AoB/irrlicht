@@ -1810,6 +1810,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				ISkinnedMesh::SRotationKey *key=AnimatedMesh->addRotationKey(joint);
 				key->frame=time;
 				key->rotation.set(X,Y,Z,W);
+				key->rotation.normalize();
 			}
 			break;
 		case 1: //scale
@@ -1878,8 +1879,8 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				ISkinnedMesh::SRotationKey *keyR=AnimatedMesh->addRotationKey(joint);
 				keyR->frame=time;
 
-				// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from mat to mat.getTransposed() for downward compatibility.
-				// Not tested so far if this was correct or wrong before quaternion fix!
+				// IRR_TEST_BROKEN_QUATERNION_USE: TODO - switched from mat to mat.getTransposed() for downward compatibility. 
+				//								   Not tested so far if this was correct or wrong before quaternion fix!
 				keyR->rotation= core::quaternion(mat.getTransposed());
 
 				ISkinnedMesh::SPositionKey *keyP=AnimatedMesh->addPositionKey(joint);

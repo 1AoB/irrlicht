@@ -97,7 +97,8 @@ const io::path& CReadFile::getFileName() const
 }
 
 
-IReadFile* CReadFile::createReadFile(const io::path& fileName)
+
+IReadFile* createReadFile(const io::path& fileName)
 {
 	CReadFile* file = new CReadFile(fileName);
 	if (file->isOpen())
