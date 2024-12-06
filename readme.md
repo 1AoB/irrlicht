@@ -19,7 +19,7 @@ You only need to set your project properties:
 2. Configure Properties ->VC++Directory ->Library Directory: Place in lib directory
 2. Configure Properties ->Linker ->General ->Additional Library Directory: Place in lib directory
 2. Configure Properties ->Linker ->Additional Dependencies: Fill in "Irrlicht. lib"
-2. Configure Properties ->Debug ->Environment: Place in "PATH=$(PATH); C: \ xxx" (which is your DLL directory)
+2. Configure Properties ->Debug ->Environment: Place in "PATH=$(PATH); C:\xxx" (which is your DLL directory)
 
 ## 使用案例
 
