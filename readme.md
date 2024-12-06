@@ -1,10 +1,12 @@
 # Irrlicht
 
-**特点**: 一个轻量级的3D引擎，易于使用，支持多种渲染后端。
+This warehouse fork is from https://github.com/freeminer/irrlicht
 
-**适合场景**: 小型3D项目，快速原型开发。
+**Features**: A lightweight 3D engine that is easy to use and supports multiple rendering backends.
 
-**网址**: [Irrlicht 官方网站](https://github.com/freeminer/irrlicht)
+**Suitable scenario * *:Small 3D projects, rapid prototyping development.
+
+**Fork URL**: [Irrlicht 官方网站](https://github.com/freeminer/irrlicht)
 
 **库文件下载**:https://irrlicht.sourceforge.io/?page_id=10
 
