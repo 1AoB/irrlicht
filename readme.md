@@ -29,6 +29,8 @@ In the direct fork repository, there are no lib and dll files. I downloaded them
 
 You just need to select the main.cpp file from the `examples` file and place it in MyTestProject to run it directly
 
+Compilation tools recommend Vs2019.
+
 ![image-20241206102628960](./assets/image-20241206102628960.png)
 
 ![image-20241206102840470](./assets/image-20241206102840470.png)
