@@ -23,7 +23,11 @@ You only need to set your project properties:
 
 ## 使用案例
 
-1.png
+In the direct fork repository, there are no lib and dll files. I downloaded them from the official source and added them, and configured the [MyTestProject/Project1](https://github.com/1AoB/irrlicht/tree/master/MyTestProject/Project1) project in a relative path manner to ensure that we can use them out of the box.
+
+You just need to select the main.cpp file from the [examples](https://github.com/1AoB/irrlicht/tree/master/examples) file and place it in MyTestProject to run it directly
+
+
 
 
 
