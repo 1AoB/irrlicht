@@ -1,5 +1,5 @@
 ﻿  main.cpp
-C:\Users\12114\Desktop\1\1\ThisIsRigjht\121231\irrlicht\include\Keycodes.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-  Project2.vcxproj -> C:\Users\12114\Desktop\1\1\ThisIsRigjht\121231\irrlicht\MyTestProject\x64\Debug\Project2.exe
+C:\Users\12114\Desktop\12\irrlicht\include\Keycodes.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  Project2.vcxproj -> C:\Users\12114\Desktop\12\irrlicht\MyTestProject\x64\Debug\Project2.exe
   'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
   或批处理文件。

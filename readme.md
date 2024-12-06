@@ -35,6 +35,18 @@ You just need to select the main.cpp file from the `examples` file and place it 
 
 ![image-20241206102755567](./assets/image-20241206102755567.png)
 
+![image-20241206104749027](./assets/image-20241206104749027.png)
+
+![image-20241206105015493](./assets/image-20241206105015493.png)
+
+![image-20241206110550673](./assets/image-20241206110550673.png)
+
+![image-20241206105645794](./assets/image-20241206105645794.png)
+
+
+
+
+
 
 
 ----

@@ -1,187 +1,316 @@
-/** Example 002 Quake3Map
+/** Example 007 Collision
 
-This Tutorial shows how to load a Quake 3 map into the engine, create a
-SceneNode for optimizing the speed of rendering, and how to create a user
-controlled camera.
+We will describe 2 methods: Automatic collision detection for moving through
+3d worlds with stair climbing and sliding, and manual scene node and triangle
+picking using a ray.  In this case, we will use a ray coming out from the
+camera, but you can use any ray.
 
-Please note that you should know the basics of the engine before starting this
-tutorial. Just take a short look at the first tutorial, if you haven't done
-this yet: http://irrlicht.sourceforge.net/tut001.html
-
-Lets start like the HelloWorld example: We include the irrlicht header files
-and an additional file to be able to ask the user for a driver type using the
-console.
+To start, we take the program from tutorial 2, which loads and displays a
+quake 3 level. We will use the level to walk in it and to pick triangles from.
+In addition we'll place 3 animated models into it for triangle picking. The
+following code starts up the engine and loads the level, as per tutorial 2.
 */
 #include <irrlicht.h>
-#include <iostream>
+#include "driverChoice.h"
 
-/*
-As already written in the HelloWorld example, in the Irrlicht Engine everything
-can be found in the namespace 'irr'. To get rid of the irr:: in front of the
-name of every class, we tell the compiler that we use that namespace from now
-on, and we will not have to write that 'irr::'. There are 5 other sub
-namespaces 'core', 'scene', 'video', 'io' and 'gui'. Unlike in the HelloWorld
-example, we do not call 'using namespace' for these 5 other namespaces, because
-in this way you will see what can be found in which namespace. But if you like,
-you can also include the namespaces like in the previous example.
-*/
 using namespace irr;
 
-/*
-Again, to be able to use the Irrlicht.DLL file, we need to link with the
-Irrlicht.lib. We could set this option in the project settings, but to make it
-easy, we use a pragma comment lib:
-*/
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-/*
-Ok, lets start. Again, we use the main() method as start, not the WinMain().
-*/
+enum
+{
+	// I use this ISceneNode ID to indicate a scene node that is
+	// not pickable by getSceneNodeAndCollisionPointFromRay()
+	ID_IsNotPickable = 0,
+
+	// I use this flag in ISceneNode IDs to indicate that the
+	// scene node can be picked by ray selection.
+	IDFlag_IsPickable = 1 << 0,
+
+	// I use this flag in ISceneNode IDs to indicate that the
+	// scene node can be highlighted.  In this example, the
+	// homonids can be highlighted, but the level mesh can't.
+	IDFlag_IsHighlightable = 1 << 1
+};
+
 int main()
 {
-	/*
-	Like in the HelloWorld example, we create an IrrlichtDevice with
-	createDevice(). The difference now is that we ask the user to select
-	which video driver to use. The Software device might be
-	too slow to draw a huge Quake 3 map, but just for the fun of it, we make
-	this decision possible, too.
-	Instead of copying this whole code into your app, you can simply include
-	driverChoice.h from Irrlicht's include directory. The function
-	driverChoiceConsole does exactly the same.
-	*/
-
 	// ask user for driver
+	video::E_DRIVER_TYPE driverType = driverChoiceConsole();
+	if (driverType == video::EDT_COUNT)
+		return 1;
 
-	video::E_DRIVER_TYPE driverType;
-
-	printf("Please select the driver you want for this example:\n"\
-		" (a) OpenGL 1.5\n (b) Direct3D 9.0c\n (c) Direct3D 8.1\n"\
-		" (d) Burning's Software Renderer\n (e) Software Renderer\n"\
-		" (f) NullDevice\n (otherKey) exit\n\n");
-
-	char i;
-	std::cin >> i;
-
-	switch (i)
-	{
-	case 'a': driverType = video::EDT_OPENGL;   break;
-	case 'b': driverType = video::EDT_DIRECT3D9; break;
-	case 'c': driverType = video::EDT_DIRECT3D8; break;
-	case 'd': driverType = video::EDT_BURNINGSVIDEO; break;
-	case 'e': driverType = video::EDT_SOFTWARE; break;
-	case 'f': driverType = video::EDT_NULL;     break;
-	default: return 1;
-	}
-
-	// create device and exit if creation failed
+	// create device
 
 	IrrlichtDevice* device =
-		createDevice(driverType, core::dimension2d<u32>(640, 480));
+		createDevice(driverType, core::dimension2d<u32>(640, 480), 16, false);
 
 	if (device == 0)
 		return 1; // could not create selected driver.
 
-	/*
-	Get a pointer to the video driver and the SceneManager so that
-	we do not always have to call irr::IrrlichtDevice::getVideoDriver() and
-	irr::IrrlichtDevice::getSceneManager().
-	*/
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
-	/*
-	To display the Quake 3 map, we first need to load it. Quake 3 maps
-	are packed into .pk3 files which are nothing else than .zip files.
-	So we add the .pk3 file to our irr::io::IFileSystem. After it was added,
-	we are able to read from the files in that archive as if they are
-	directly stored on the disk.
-	*/
 	device->getFileSystem()->addFileArchive("../../media/map-20kdm2.pk3");
 
-	/*
-	Now we can load the mesh by calling
-	irr::scene::ISceneManager::getMesh(). We get a pointer returned to an
-	irr::scene::IAnimatedMesh. As you might know, Quake 3 maps are not
-	really animated, they are only a huge chunk of static geometry with
-	some materials attached. Hence the IAnimatedMesh consists of only one
-	frame, so we get the "first frame" of the "animation", which is our
-	quake level and create an Octree scene node with it, using
-	irr::scene::ISceneManager::addOctreeSceneNode().
-	The Octree optimizes the scene a little bit, trying to draw only geometry
-	which is currently visible. An alternative to the Octree would be a
-	irr::scene::IMeshSceneNode, which would always draw the complete
-	geometry of the mesh, without optimization. Try it: Use
-	irr::scene::ISceneManager::addMeshSceneNode() instead of
-	addOctreeSceneNode() and compare the primitives drawn by the video
-	driver. (There is a irr::video::IVideoDriver::getPrimitiveCountDrawn()
-	method in the irr::video::IVideoDriver class). Note that this
-	optimization with the Octree is only useful when drawing huge meshes
-	consisting of lots of geometry.
-	*/
-	scene::IAnimatedMesh* mesh = smgr->getMesh("20kdm2.bsp");
-	scene::ISceneNode* node = 0;
+	scene::IAnimatedMesh* q3levelmesh = smgr->getMesh("20kdm2.bsp");
+	scene::IMeshSceneNode* q3node = 0;
 
-	if (mesh)
-		node = smgr->addOctreeSceneNode(mesh->getMesh(0), 0, -1, 1024);
-	//		node = smgr->addMeshSceneNode(mesh->getMesh(0));
-
-		/*
-		Because the level was not modelled around the origin (0,0,0), we
-		translate the whole level a little bit. This is done on
-		irr::scene::ISceneNode level using the methods
-		irr::scene::ISceneNode::setPosition() (in this case),
-		irr::scene::ISceneNode::setRotation(), and
-		irr::scene::ISceneNode::setScale().
-		*/
-	if (node)
-		node->setPosition(core::vector3df(-1300, -144, -1249));
+	// The Quake mesh is pickable, but doesn't get highlighted.
+	if (q3levelmesh)
+		q3node = smgr->addOctreeSceneNode(q3levelmesh->getMesh(0), 0, IDFlag_IsPickable);
 
 	/*
-	Now we only need a camera to look at the Quake 3 map.
-	We want to create a user controlled camera. There are some
-	cameras available in the Irrlicht engine. For example the
-	MayaCamera which can be controlled like the camera in Maya:
-	Rotate with left mouse button pressed, Zoom with both buttons pressed,
-	translate with right mouse button pressed. This could be created with
-	irr::scene::ISceneManager::addCameraSceneNodeMaya(). But for this
-	example, we want to create a camera which behaves like the ones in
-	first person shooter games (FPS) and hence use
-	irr::scene::ISceneManager::addCameraSceneNodeFPS().
+	So far so good, we've loaded the quake 3 level like in tutorial 2. Now,
+	here comes something different: We create a triangle selector. A
+	triangle selector is a class which can fetch the triangles from scene
+	nodes for doing different things with them, for example collision
+	detection. There are different triangle selectors, and all can be
+	created with the ISceneManager. In this example, we create an
+	OctreeTriangleSelector, which optimizes the triangle output a little
+	bit by reducing it like an octree. This is very useful for huge meshes
+	like quake 3 levels. After we created the triangle selector, we attach
+	it to the q3node. This is not necessary, but in this way, we do not
+	need to care for the selector, for example dropping it after we do not
+	need it anymore.
 	*/
-	smgr->addCameraSceneNodeFPS();
+
+	scene::ITriangleSelector* selector = 0;
+
+	if (q3node)
+	{
+		q3node->setPosition(core::vector3df(-1350, -130, -1400));
+
+		selector = smgr->createOctreeTriangleSelector(
+			q3node->getMesh(), q3node, 128);
+		q3node->setTriangleSelector(selector);
+		// We're not done with this selector yet, so don't drop it.
+	}
+
 
 	/*
-	The mouse cursor needs not be visible, so we hide it via the
-	irr::IrrlichtDevice::ICursorControl.
+	We add a first person shooter camera to the scene so that we can see and
+	move in the quake 3 level like in tutorial 2. But this, time, we add a
+	special animator to the camera: A Collision Response animator. This
+	animator modifies the scene node to which it is attached to in order to
+	prevent it moving through walls, and to add gravity to it. The
+	only thing we have to tell the animator is how the world looks like,
+	how big the scene node is, how much gravity to apply and so on. After the
+	collision response animator is attached to the camera, we do not have to do
+	anything more for collision detection, anything is done automatically.
+	The rest of the collision detection code below is for picking. And please
+	note another cool feature: The collision response animator can be
+	attached also to all other scene nodes, not only to cameras. And it can
+	be mixed with other scene node animators. In this way, collision
+	detection and response in the Irrlicht engine is really easy.
+
+	Now we'll take a closer look on the parameters of
+	createCollisionResponseAnimator(). The first parameter is the
+	TriangleSelector, which specifies how the world, against collision
+	detection is done looks like. The second parameter is the scene node,
+	which is the object, which is affected by collision detection, in our
+	case it is the camera. The third defines how big the object is, it is
+	the radius of an ellipsoid. Try it out and change the radius to smaller
+	values, the camera will be able to move closer to walls after this. The
+	next parameter is the direction and speed of gravity.  We'll set it to
+	(0, -10, 0), which approximates to realistic gravity, assuming that our
+	units are metres. You could set it to (0,0,0) to disable gravity. And the
+	last value is just a translation: Without this, the ellipsoid with which
+	collision detection is done would be around the camera, and the camera would
+	be in the middle of the ellipsoid. But as human beings, we are used to have our
+	eyes on top of the body, with which we collide with our world, not in
+	the middle of it. So we place the scene node 50 units over the center
+	of the ellipsoid with this parameter. And that's it, collision
+	detection works now.
 	*/
+
+	// Set a jump speed of 3 units per second, which gives a fairly realistic jump
+	// when used with the gravity of (0, -10, 0) in the collision response animator.
+	scene::ICameraSceneNode* camera =
+		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, ID_IsNotPickable, 0, 0, true, 3.f);
+	camera->setPosition(core::vector3df(50, 50, -60));
+	camera->setTarget(core::vector3df(-70, 30, -60));
+
+	if (selector)
+	{
+		scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
+			selector, camera, core::vector3df(30, 50, 30),
+			core::vector3df(0, -10, 0), core::vector3df(0, 30, 0));
+		selector->drop(); // As soon as we're done with the selector, drop it.
+		camera->addAnimator(anim);
+		anim->drop();  // And likewise, drop the animator when we're done referring to it.
+	}
+
+	// Now I create three animated characters which we can pick, a dynamic light for
+	// lighting them, and a billboard for drawing where we found an intersection.
+
+	// First, let's get rid of the mouse cursor.  We'll use a billboard to show
+	// what we're looking at.
 	device->getCursorControl()->setVisible(false);
 
-	/*
-	We have done everything, so lets draw it. We also write the current
-	frames per second and the primitives drawn into the caption of the
-	window. The test for irr::IrrlichtDevice::isWindowActive() is optional,
-	but prevents the engine to grab the mouse cursor after task switching
-	when other programs are active. The call to
-	irr::IrrlichtDevice::yield() will avoid the busy loop to eat up all CPU
-	cycles when the window is not active.
-	*/
+	// Add the billboard.
+	scene::IBillboardSceneNode* bill = smgr->addBillboardSceneNode();
+	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+	bill->setMaterialTexture(0, driver->getTexture("../../media/particle.bmp"));
+	bill->setMaterialFlag(video::EMF_LIGHTING, false);
+	bill->setMaterialFlag(video::EMF_ZBUFFER, false);
+	bill->setSize(core::dimension2d<f32>(20.0f, 20.0f));
+	bill->setID(ID_IsNotPickable); // This ensures that we don't accidentally ray-pick it
+
+	/* Add 3 animated hominids, which we can pick using a ray-triangle intersection.
+	They all animate quite slowly, to make it easier to see that accurate triangle
+	selection is being performed. */
+	scene::IAnimatedMeshSceneNode* node = 0;
+
+	video::SMaterial material;
+
+	// Add an MD2 node, which uses vertex-based animation.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/faerie.md2"),
+		0, IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-90, -15, -140)); // Put its feet on the floor.
+	node->setScale(core::vector3df(1.6f)); // Make it appear realistically scaled
+	node->setMD2Animation(scene::EMAT_POINT);
+	node->setAnimationSpeed(20.f);
+	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
+	material.Lighting = true;
+	material.NormalizeNormals = true;
+	node->getMaterial(0) = material;
+
+	// Now create a triangle selector for it.  The selector will know that it
+	// is associated with an animated node, and will update itself as necessary.
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop(); // We're done with this selector, so drop it now.
+
+	// And this B3D file uses skinned skeletal animation.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"),
+		0, IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setScale(core::vector3df(10));
+	node->setPosition(core::vector3df(-75, -66, -80));
+	node->setRotation(core::vector3df(0, 90, 0));
+	node->setAnimationSpeed(8.f);
+	node->getMaterial(0).NormalizeNormals = true;
+	node->getMaterial(0).Lighting = true;
+	// Just do the same as we did above.
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
+
+	// This X files uses skeletal animation, but without skinning.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/dwarf.x"),
+		0, IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-70, -66, -30)); // Put its feet on the floor.
+	node->setRotation(core::vector3df(0, -90, 0)); // And turn it towards the camera.
+	node->setAnimationSpeed(20.f);
+	node->getMaterial(0).Lighting = true;
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
+
+
+	// And this mdl file uses skinned skeletal animation.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/yodan.mdl"),
+		0, IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-90, -25, 20));
+	node->setScale(core::vector3df(0.8f));
+	node->getMaterial(0).Lighting = true;
+	node->setAnimationSpeed(20.f);
+
+	// Just do the same as we did above.
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
+
+	material.setTexture(0, 0);
+	material.Lighting = false;
+
+	// Add a light, so that the unselected nodes aren't completely dark.
+	scene::ILightSceneNode* light = smgr->addLightSceneNode(0, core::vector3df(-60, 100, 400),
+		video::SColorf(1.0f, 1.0f, 1.0f, 1.0f), 600.0f);
+	light->setID(ID_IsNotPickable); // Make it an invalid target for selection.
+
+	// Remember which scene node is highlighted
+	scene::ISceneNode* highlightedSceneNode = 0;
+	scene::ISceneCollisionManager* collMan = smgr->getSceneCollisionManager();
 	int lastFPS = -1;
 
+	// draw the selection triangle only as wireframe
+	material.Wireframe = true;
+
 	while (device->run())
-	{
 		if (device->isWindowActive())
 		{
-			driver->beginScene(true, true, video::SColor(255, 200, 200, 200));
+			driver->beginScene(true, true, 0);
 			smgr->drawAll();
+
+			// Unlight any currently highlighted scene node
+			if (highlightedSceneNode)
+			{
+				highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, true);
+				highlightedSceneNode = 0;
+			}
+
+			// All intersections in this example are done with a ray cast out from the camera to
+			// a distance of 1000.  You can easily modify this to check (e.g.) a bullet
+			// trajectory or a sword's position, or create a ray from a mouse click position using
+			// ISceneCollisionManager::getRayFromScreenCoordinates()
+			core::line3d<f32> ray;
+			ray.start = camera->getPosition();
+			ray.end = ray.start + (camera->getTarget() - ray.start).normalize() * 1000.0f;
+
+			// Tracks the current intersection point with the level or a mesh
+			core::vector3df intersection;
+			// Used to show with triangle has been hit
+			core::triangle3df hitTriangle;
+
+			// This call is all you need to perform ray/triangle collision on every scene node
+			// that has a triangle selector, including the Quake level mesh.  It finds the nearest
+			// collision point/triangle, and returns the scene node containing that point.
+			// Irrlicht provides other types of selection, including ray/triangle selector,
+			// ray/box and ellipse/triangle selector, plus associated helpers.
+			// See the methods of ISceneCollisionManager
+			scene::ISceneNode* selectedSceneNode =
+				collMan->getSceneNodeAndCollisionPointFromRay(
+					ray,
+					intersection, // This will be the position of the collision
+					hitTriangle, // This will be the triangle hit in the collision
+					IDFlag_IsPickable, // This ensures that only nodes that we have
+							// set up to be pickable are considered
+					0); // Check the entire scene (this is actually the implicit default)
+
+		// If the ray hit anything, move the billboard to the collision position
+		// and draw the triangle that was hit.
+			if (selectedSceneNode)
+			{
+				bill->setPosition(intersection);
+
+				// We need to reset the transform before doing our own rendering.
+				driver->setTransform(video::ETS_WORLD, core::matrix4());
+				driver->setMaterial(material);
+				driver->draw3DTriangle(hitTriangle, video::SColor(0, 255, 0, 0));
+
+				// We can check the flags for the scene node that was hit to see if it should be
+				// highlighted. The animated nodes can be highlighted, but not the Quake level mesh
+				if ((selectedSceneNode->getID() & IDFlag_IsHighlightable) == IDFlag_IsHighlightable)
+				{
+					highlightedSceneNode = selectedSceneNode;
+
+					// Highlighting in this case means turning lighting OFF for this node,
+					// which means that it will be drawn with full brightness.
+					highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
+				}
+			}
+
+			// We're all done drawing, so end the scene.
 			driver->endScene();
 
 			int fps = driver->getFPS();
 
 			if (lastFPS != fps)
 			{
-				core::stringw str = L"Irrlicht Engine - Quake 3 Map example [";
+				core::stringw str = L"Collision detection example - Irrlicht Engine [";
 				str += driver->getName();
 				str += "] FPS:";
 				str += fps;
@@ -190,17 +319,11 @@ int main()
 				lastFPS = fps;
 			}
 		}
-		else
-			device->yield();
-	}
 
-	/*
-	In the end, delete the Irrlicht device.
-	*/
 	device->drop();
+
 	return 0;
 }
 
 /*
-That's it. Compile and play around with the program.
 **/
